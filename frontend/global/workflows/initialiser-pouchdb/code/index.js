@@ -25,10 +25,8 @@ document.addEventListener('alpine:init', () => {
           throw new Error('PouchDB not loaded - check CDN');
         }
         
-        // Plugin find
-        if (PouchDB.plugin) {
-          PouchDB.plugin(PouchDBFind);
-        }
+        // Plugin find (déjà chargé via CDN, étend automatiquement PouchDB)
+        // pouchdb-find.js ajoute find() à PouchDB automatiquement
 
         /**
          * @action Créer instance PouchDB locale
