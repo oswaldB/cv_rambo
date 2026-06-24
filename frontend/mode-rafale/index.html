@@ -1,33 +1,431 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <title>CV Rambo - Mode Rafale</title>
-  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-  <script src="workflows/selectionner-cibles/code/index.js"></script>
-  <script src="workflows/configurer-rafale/code/index.js"></script>
-  <script src="workflows/executer-rafale/code/index.js"></script>
-  <script src="workflows/interrompre-rafale/code/index.js"></script>
-  <style>*{margin:0;padding:0;box-sizing:border-box}body{font-family:'Roboto Condensed',sans-serif;background:linear-gradient(135deg,#2F4F4F,#0a0a0a);min-height:100vh;color:#f5f5f5;padding:40px}</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CV Rambo - Mode Rafale</title>
+    
+    <script src="https://cdn.jsdelivr.net/npm/pouchdb@8.0.1/dist/pouchdb.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/pouchdb-find@8.0.1/dist/pouchdb.find.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.3/dist/cdn.min.js"></script>
+    
+    <script src="../config.js"></script>
+    
+    <script src="../global/workflows/initialiser-pouchdb/code/index.js"></script>
+    <script src="workflows/selectionner-cibles/code/index.js"></script>
+    <script src="workflows/executer-sequentiel/code/index.js"></script>
+    
+    <style>
+        :root {
+            --rambo-red: #FF0000;
+            --camouflage-green: #2E8B57;
+            --gunmetal-gray: #2F4F4F;
+            --gold: #FFD700;
+            --text-white: #FFFFFF;
+            --status-new: #FFA500;
+            --status-processing: #3498db;
+            --status-ready: #2ecc71;
+            --status-applied: #95a5a6;
+            --status-error: #e74c3c;
+            --bg-dark: #1a1a1a;
+            --border-color: #333;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Courier New', monospace;
+            background: var(--gunmetal-gray);
+            color: var(--text-white);
+            min-height: 100vh;
+        }
+        
+        .layout { display: flex; min-height: 100vh; }
+        
+        .sidebar {
+            width: 220px;
+            background: var(--bg-dark);
+            border-right: 2px solid var(--rambo-red);
+            padding: 20px 0;
+            flex-shrink: 0;
+        }
+        
+        .logo {
+            text-align: center;
+            padding: 0 20px 20px;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 20px;
+        }
+        
+        .logo h1 {
+            font-family: 'Impact', sans-serif;
+            color: var(--rambo-red);
+            font-size: 1.4rem;
+            text-shadow: 2px 2px 0 var(--gold);
+        }
+        
+        .nav-item {
+            display: block;
+            padding: 15px 20px;
+            color: var(--text-white);
+            text-decoration: none;
+            border-left: 3px solid transparent;
+            transition: all 0.3s;
+        }
+        
+        .nav-item:hover, .nav-item.active {
+            background: rgba(255, 0, 0, 0.1);
+            border-left-color: var(--rambo-red);
+        }
+        
+        .nav-item .icon { margin-right: 10px; }
+        
+        .main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        .header {
+            padding: 20px 30px;
+            background: var(--bg-dark);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .header h2 {
+            font-family: 'Impact', sans-serif;
+            font-size: 1.5rem;
+            color: var(--gold);
+            text-transform: uppercase;
+        }
+        
+        /* Selection View */
+        .selection-view { padding: 30px; overflow-y: auto; }
+        
+        .selection-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+        
+        .selection-count {
+            font-size: 1.1rem;
+            color: var(--gold);
+        }
+        
+        .btn-rafale {
+            background: var(--rambo-red);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-family: inherit;
+            font-weight: bold;
+            font-size: 1.2rem;
+            cursor: pointer;
+            text-transform: uppercase;
+            box-shadow: 4px 4px 0 var(--gold);
+        }
+        
+        .btn-rafale:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+        
+        .cibles-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 15px;
+        }
+        
+        .cible-card {
+            background: var(--bg-dark);
+            border: 2px solid var(--border-color);
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+        }
+        
+        .cible-card:hover { border-color: #555; }
+        
+        .cible-card.selected {
+            border-color: var(--rambo-red);
+            box-shadow: 0 0 10px rgba(255, 0, 0, 0.3);
+        }
+        
+        .cible-card input[type="checkbox"] {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            width: 20px;
+            height: 20px;
+            accent-color: var(--rambo-red);
+        }
+        
+        .cible-title { font-weight: bold; margin-bottom: 8px; padding-right: 30px; }
+        .cible-url { font-size: 0.8rem; color: #888; margin-bottom: 10px; }
+        
+        .cible-status {
+            display: inline-block;
+            padding: 3px 8px;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+        }
+        
+        .status-new { background: var(--status-new); color: black; }
+        .status-script-ready { background: var(--status-ready); color: black; }
+        
+        /* Execution View */
+        .execution-view {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 30px;
+        }
+        
+        .progress-bar-container {
+            background: var(--bg-dark);
+            padding: 20px;
+            margin-bottom: 25px;
+        }
+        
+        .progress-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        
+        .progress-track {
+            height: 8px;
+            background: #333;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: var(--rambo-red);
+            transition: width 0.3s;
+        }
+        
+        .current-cible {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            flex: 1;
+        }
+        
+        .cible-details {
+            background: var(--bg-dark);
+            border: 1px solid var(--border-color);
+            padding: 25px;
+        }
+        
+        .cible-details h3 {
+            color: var(--gold);
+            margin-bottom: 20px;
+            font-family: 'Impact', sans-serif;
+        }
+        
+        .detail-row {
+            display: flex;
+            margin-bottom: 15px;
+        }
+        
+        .detail-label { width: 100px; color: #888; }
+        .detail-value { flex: 1; }
+        .detail-value a { color: var(--status-processing); }
+        
+        .script-panel {
+            background: var(--bg-dark);
+            border: 1px solid var(--border-color);
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .script-panel h3 {
+            color: var(--gold);
+            margin-bottom: 20px;
+            font-family: 'Impact', sans-serif;
+        }
+        
+        .script-content {
+            flex: 1;
+            background: #0a0a0a;
+            border: 1px solid #333;
+            padding: 15px;
+            font-family: 'Consolas', monospace;
+            font-size: 0.85rem;
+            white-space: pre-wrap;
+            overflow-y: auto;
+            margin-bottom: 20px;
+        }
+        
+        .execution-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        
+        .btn-action {
+            padding: 15px;
+            font-family: inherit;
+            font-weight: bold;
+            cursor: pointer;
+            text-transform: uppercase;
+            border: none;
+        }
+        
+        .btn-copy { background: var(--camouflage-green); color: white; }
+        .btn-applied { background: var(--status-ready); color: black; }
+        
+        .navigation-actions {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-color);
+        }
+        
+        .btn-nav {
+            background: transparent;
+            border: 2px solid var(--gold);
+            color: var(--gold);
+            padding: 10px 25px;
+            font-family: inherit;
+            cursor: pointer;
+        }
+        
+        .btn-nav:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+        
+        .empty-rafale {
+            text-align: center;
+            padding: 60px;
+        }
+        
+        .empty-rafale h3 { color: var(--gold); margin-bottom: 20px; }
+    </style>
 </head>
-<body x-data="{...workflowSelectionnerCibles(),...workflowConfigurerRafale(),...workflowExecuterRafale(),...workflowInterrompreRafale()}">
-  <div style="max-width:1000px;margin:0 auto">
-    <h1 style="font-family:'Bebas Neue',sans-serif;font-size:48px;color:#FFD700;text-align:center;letter-spacing:4px">⚡ MODE RAFALE</h1>
-    <p style="color:#2E8B57;text-align:center;margin-bottom:40px">CANDIDATURES EN SÉRIE</p>
-    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px">
-      <div style="background:rgba(0,0,0,0.4);border:2px solid #FFD700;padding:20px">
-        <h3 style="color:#FFD700;font-family:'Bebas Neue'">1. SÉLECTIONNER</h3>
-        <button @click="selectionnerCibles()" style="width:100%;margin-top:15px;padding:15px;background:#2E8B57;border:2px solid #FFD700;color:white;font-family:'Bebas Neue';cursor:pointer">CHOISIR LES CIBLES</button>
-      </div>
-      <div style="background:rgba(0,0,0,0.4);border:2px solid #FFD700;padding:20px">
-        <h3 style="color:#FFD700;font-family:'Bebas Neue'">2. CONFIGURER</h3>
-        <button @click="configurerRafale({delay:5000})" style="width:100%;margin-top:15px;padding:15px;background:#2E8B57;border:2px solid #FFD700;color:white;font-family:'Bebas Neue';cursor:pointer">PARAMÈTRES</button>
-      </div>
-      <div style="background:rgba(0,0,0,0.4);border:2px solid #FFD700;padding:20px">
-        <h3 style="color:#FFD700;font-family:'Bebas Neue'">3. EXÉCUTER</h3>
-        <button @click="executerRafale()" style="width:100%;margin-top:15px;padding:15px;background:#FF0000;border:2px solid #FFD700;color:white;font-family:'Bebas Neue';cursor:pointer">🔥 TIRER</button>
-      </div>
+<body>
+    <div class="layout" x-data="{ ...pouchdbInitializer(), ...rafaleSelector(), ...rafaleExecutor() }" x-init="$data.init(); initRafale()">
+        
+        <aside class="sidebar">
+            <div class="logo">
+                <h1>🔫 CV RAMBO</h1>
+            </div>
+            <nav>
+                <a href="../dashboard/index.html" class="nav-item">
+                    <span class="icon">📊</span> Dashboard
+                </a>
+                <a href="../ajout-url/index.html" class="nav-item">
+                    <span class="icon">➕</span> Ajouter
+                </a>
+                <a href="../kanban/index.html" class="nav-item">
+                    <span class="icon">📋</span> Kanban
+                </a>
+                <a href="#" class="nav-item active">
+                    <span class="icon">🚀</span> Rafale
+                </a>
+                <a href="../arsenal/index.html" class="nav-item">
+                    <span class="icon">⚔️</span> Arsenal
+                </a>
+                <a href="../settings/index.html" class="nav-item">
+                    <span class="icon">⚙️</span> Settings
+                </a>
+            </nav>
+        </aside>
+        
+        <main class="main">
+            <div class="header">
+                <h2 x-show="!isExecuting">🚀 Mode Rafale</h2>
+                <h2 x-show="isExecuting">🔥 Rafale en cours</h2>
+            </div>
+            
+            <!-- Selection View -->
+            <div class="selection-view" x-show="!isExecuting">
+                <div class="selection-header">
+                    <div class="selection-count">
+                        🎯 <span x-text="selectedCount"></span>/10 sélectionnés
+                    </div>
+                    <button class="btn-rafale" :disabled="selectedCount === 0" @click="startRafale()">
+                        🔥 LANCER LA RAFALE
+                    </button>
+                </div>
+                
+                <div class="cibles-grid" x-show="eligibleCibles.length > 0">
+                    <template x-for="cible in eligibleCibles" :key="cible._id">
+                        <div class="cible-card" :class="{ selected: isSelected(cible._id) }" @click="toggleSelection(cible._id)">
+                            <input type="checkbox" :checked="isSelected(cible._id)" @click.stop>
+                            <div class="cible-title" x-text="cible.title || 'Sans titre'"></div>
+                            <div class="cible-url" x-text="cible.siteType || 'Site générique'"></div>
+                            <span class="cible-status" :class="'status-' + cible.status" x-text="cible.status === 'script-ready' ? 'Script prêt' : 'Nouveau'"></span>
+                        </div>
+                    </template>
+                </div>
+                
+                <div class="empty-rafale" x-show="eligibleCibles.length === 0">
+                    <h3>🎯 Aucune cible éligible</h3>
+                    <p>Ajoutez des offres ou attendez que les scripts soient générés.</p>
+                </div>
+            </div>
+            
+            <!-- Execution View -->
+            <div class="execution-view" x-show="isExecuting">
+                <div class="progress-bar-container">
+                    <div class="progress-info">
+                        <span>Progression</span>
+                        <span x-text="(currentIndex + 1) + ' / ' + selectedCibles.length"></span>
+                    </div>
+                    <div class="progress-track">
+                        <div class="progress-fill" :style="'width: ' + ((currentIndex + 1) / selectedCibles.length * 100) + '%'"></div>
+                    </div>
+                </div>
+                
+                <div class="current-cible" x-show="currentCible">
+                    <div class="cible-details">
+                        <h3>🎯 Cible actuelle</h3>
+                        <div class="detail-row">
+                            <div class="detail-label">Titre</div>
+                            <div class="detail-value" x-text="currentCible?.title || 'Sans titre'"></div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">Site</div>
+                            <div class="detail-value" x-text="currentCible?.siteType || 'Générique'"></div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">URL</div>
+                            <div class="detail-value">
+                                <a :href="currentCible?.url" target="_blank" x-text="currentCible?.url ? 'Ouvrir l\'offre ↗' : 'N/A'"></a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="script-panel">
+                        <h3>📝 Script</h3>
+                        <div class="script-content" x-text="currentCible?.generatedScript || '// Script non disponible'"></div>
+                        
+                        <div class="execution-actions">
+                            <button class="btn-action btn-copy" @click="copyCurrentScript()">📋 Copier</button>
+                            <button class="btn-action btn-applied" @click="markCurrentApplied()">✅ Postulé</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="navigation-actions">
+                    <button class="btn-nav" :disabled="currentIndex === 0" @click="prev()">← Précédent</button>
+                    <button class="btn-nav" :disabled="currentIndex >= selectedCibles.length - 1" @click="next()">Suivant →</button>
+                </div>
+            </div>
+        </main>
     </div>
-  </div>
 </body>
 </html>

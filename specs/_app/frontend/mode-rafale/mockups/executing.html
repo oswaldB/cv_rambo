@@ -1,0 +1,267 @@
+<!-- _app/frontend/mode-rafale/mockups/executing.html -->
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CV Rambo - Mode Rafale</title>
+    <style>
+        :root {
+            --rambo-red: #FF0000;
+            --camouflage-green: #2E8B57;
+            --gunmetal-gray: #2F4F4F;
+            --gold: #FFD700;
+            --status-ready: #2ecc71;
+            --status-applied: #95a5a6;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Courier New', monospace;
+            background: var(--gunmetal-gray);
+            color: white;
+            min-height: 100vh;
+        }
+        .layout {
+            display: flex;
+            min-height: 100vh;
+        }
+        .sidebar {
+            width: 200px;
+            background: #1a1a1a;
+            border-right: 2px solid var(--rambo-red);
+        }
+        .main {
+            flex: 1;
+            padding: 30px;
+        }
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        h2 {
+            font-family: 'Impact', sans-serif;
+            font-size: 1.8rem;
+            color: var(--gold);
+        }
+        .progress-indicator {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            padding: 15px 25px;
+            text-align: center;
+        }
+        .progress-count {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--rambo-red);
+        }
+        .progress-label {
+            font-size: 0.85rem;
+            color: #888;
+        }
+        /* Current target */
+        .current-target {
+            background: #1a1a1a;
+            border: 2px solid var(--rambo-red);
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+        .target-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        .target-counter {
+            background: var(--rambo-red);
+            color: white;
+            padding: 5px 15px;
+            font-weight: bold;
+        }
+        .target-title {
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .target-company {
+            color: var(--camouflage-green);
+            margin-bottom: 15px;
+        }
+        .target-url {
+            color: #666;
+            font-size: 0.85rem;
+            word-break: break-all;
+        }
+        /* Script preview */
+        .script-preview {
+            background: #0a0a0a;
+            border: 1px solid #333;
+            padding: 15px;
+            margin: 20px 0;
+            font-family: monospace;
+            font-size: 0.8rem;
+            color: #00ff00;
+            max-height: 100px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+        /* Actions */
+        .actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 25px;
+        }
+        .btn {
+            padding: 15px 30px;
+            font-family: inherit;
+            font-weight: bold;
+            cursor: pointer;
+            border: none;
+            text-transform: uppercase;
+        }
+        .btn-copy {
+            background: var(--status-ready);
+            color: black;
+        }
+        .btn-open {
+            background: transparent;
+            border: 2px solid var(--gold);
+            color: var(--gold);
+        }
+        .btn-applied {
+            background: var(--rambo-red);
+            color: white;
+            flex: 1;
+        }
+        .btn-next {
+            background: var(--gold);
+            color: black;
+        }
+        .btn-skip {
+            background: transparent;
+            border: 1px solid #555;
+            color: #888;
+        }
+        /* Navigation */
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        /* Queue */
+        .queue {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            padding: 20px;
+        }
+        .queue h3 {
+            color: var(--gold);
+            margin-bottom: 15px;
+            font-size: 1rem;
+        }
+        .queue-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            border-bottom: 1px solid #333;
+            opacity: 0.6;
+        }
+        .queue-item.current {
+            opacity: 1;
+            background: rgba(255, 0, 0, 0.1);
+        }
+        .queue-item.applied {
+            opacity: 0.4;
+            text-decoration: line-through;
+        }
+        .queue-status {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #555;
+        }
+        .queue-status.ready { background: var(--status-ready); }
+        .queue-status.applied { background: var(--status-applied); }
+    </style>
+</head>
+<body>
+    <div class="layout">
+        <aside class="sidebar">
+            <!-- Menu -->
+        </aside>
+        
+        <main class="main">
+            <div class="header">
+                <h2>🔫 MODE RAFALE</h2>
+                <div class="progress-indicator">
+                    <div class="progress-count">3 / 10</div>
+                    <div class="progress-label">Postulé</div>
+                </div>
+            </div>
+            
+            <!-- Current target -->
+            <div class="current-target">
+                <div class="target-header">
+                    <div class="target-counter">CIBLE 4 / 10</div>
+                </div>
+                
+                <div class="target-title">Développeur Frontend React</div>
+                <div class="target-company">@ StartupXYZ</div>
+                <div class="target-url">welcometothejungle.com/fr/companies/startupxyz/jobs/...</div>
+                
+                <div class="script-preview">
+(function(){const d={firstName:"Oswald",lastName:"Bernard",email:"oswald@example.com"};const f=document.querySelector('form');if(!f)return;const fill=(s,v)=>{const el=f.querySelector(s);if(el){el.value=v;el.dispatchEvent(new Event('input',{bubbles:true}));}};fill('[name="firstName"]',d.firstName);fill('[name="lastName"]',d.lastName);/* ... */})();</div>
+                
+                <div class="actions">
+                    <button class="btn btn-copy">📋 Copier</button>
+                    <button class="btn btn-open">🔗 Ouvrir</button>
+                    <button class="btn btn-applied">✅ J'AI POSTULÉ</button>
+                </div>
+                
+                <div class="navigation">
+                    <button class="btn btn-skip">← Précédent</button>
+                    <button class="btn btn-skip">Passer →</button>
+                </div>
+            </div>
+            
+            <!-- Queue preview -->
+            <div class="queue">
+                <h3>📋 File d'attente</h3>
+                
+                <div class="queue-item applied">
+                    <div class="queue-status applied"></div>
+                    <span>Dev @ TechCorp</span>
+                </div>
+                
+                <div class="queue-item applied">
+                    <div class="queue-status applied"></div>
+                    <span>Fullstack @ WebAgency</span>
+                </div>
+                
+                <div class="queue-item applied">
+                    <div class="queue-status applied"></div>
+                    <span>Lead @ ScaleUp</span>
+                </div>
+                
+                <div class="queue-item current">
+                    <div class="queue-status ready"></div>
+                    <span>🎯 Frontend @ StartupXYZ</span>
+                </div>
+                
+                <div class="queue-item">
+                    <div class="queue-status ready"></div>
+                    <span>Backend @ DataCorp</span>
+                </div>
+                
+                <div class="queue-item">
+                    <div class="queue-status ready"></div>
+                    <span>+ 5 autres cibles...</span>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

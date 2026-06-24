@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <style>
+    body {
+      width: 350px;
+      padding: 20px;
+      font-family: 'Courier New', monospace;
+      background: #2F4F4F;
+      color: #fff;
+      margin: 0;
+    }
+    
+    .header {
+      text-align: center;
+      margin-bottom: 20px;
+      padding-bottom: 15px;
+      border-bottom: 2px solid #FF0000;
+    }
+    
+    .header h1 {
+      margin: 0;
+      font-size: 1.3rem;
+      color: #FF0000;
+      text-shadow: 2px 2px 0 #FFD700;
+    }
+    
+    .form-group {
+      margin-bottom: 15px;
+    }
+    
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-size: 0.85rem;
+      color: #FFD700;
+      text-transform: uppercase;
+    }
+    
+    input[type="text"], input[type="url"] {
+      width: 100%;
+      padding: 10px;
+      border: 2px solid #333;
+      background: #1a1a1a;
+      color: #fff;
+      font-family: inherit;
+      box-sizing: border-box;
+    }
+    
+    input:focus {
+      outline: none;
+      border-color: #FF0000;
+    }
+    
+    .detected-info {
+      background: rgba(255, 215, 0, 0.1);
+      border-left: 3px solid #FFD700;
+      padding: 10px;
+      margin-bottom: 15px;
+      font-size: 0.85rem;
+    }
+    
+    .btn {
+      width: 100%;
+      padding: 12px;
+      background: #FF0000;
+      color: white;
+      border: none;
+      font-family: inherit;
+      font-weight: bold;
+      text-transform: uppercase;
+      cursor: pointer;
+      box-shadow: 3px 3px 0 #FFD700;
+      transition: transform 0.1s;
+    }
+    
+    .btn:hover {
+      transform: translate(-2px, -2px);
+      box-shadow: 5px 5px 0 #FFD700;
+    }
+    
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+    
+    .status {
+      margin-top: 15px;
+      padding: 10px;
+      text-align: center;
+      font-size: 0.9rem;
+      display: none;
+    }
+    
+    .status.success {
+      display: block;
+      background: rgba(46, 204, 113, 0.2);
+      border: 1px solid #2ecc71;
+      color: #2ecc71;
+    }
+    
+    .status.error {
+      display: block;
+      background: rgba(231, 76, 60, 0.2);
+      border: 1px solid #e74c3c;
+      color: #e74c3c;
+    }
+    
+    .status.loading {
+      display: block;
+      background: rgba(52, 152, 219, 0.2);
+      border: 1px solid #3498db;
+      color: #3498db;
+    }
+    
+    .link-app {
+      display: block;
+      text-align: center;
+      margin-top: 15px;
+      color: #3498db;
+      text-decoration: none;
+      font-size: 0.85rem;
+    }
+    
+    .link-app:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>🔫 CV RAMBO</h1>
+  </div>
+  
+  <div id="detected-info" class="detected-info" style="display: none;">
+    🎯 Site détecté: <span id="site-type">-</span>
+  </div>
+  
+  <div class="form-group">
+    <label>URL de l'offre</label>
+    <input type="url" id="url-input" placeholder="https://...">
+  </div>
+  
+  <div class="form-group">
+    <label>Titre du poste (optionnel)</label>
+    <input type="text" id="title-input" placeholder="Développeur Fullstack...">
+  </div>
+  
+  <button id="add-btn" class="btn">➕ AJOUTER LA CIBLE</button>
+  
+  <div id="status" class="status"></div>
+  
+  <a href="http://localhost:8080" target="_blank" class="link-app">
+    🚀 Ouvrir CV Rambo
+  </a>
+  
+  <script src="popup.js"></script>
+</body>
+</html>

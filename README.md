@@ -1,103 +1,197 @@
-# 🎯 CV RAMBO - Projet Complet
+# 🔫 CV Rambo
 
-Extension Chrome pour la gestion de candidatures avec thème rétro action movie 80s.
+**L'arsenal ultime pour votre recherche d'emploi.**
 
-## ✅ Statut
+Application web complète pour automatiser vos candidatures : générez des scripts JavaScript personnalisés via IA (Ollama) pour remplir automatiquement les formulaires d'emploi.
 
-**PROJET TERMINÉ**
+## 🎯 Features
 
-- ✅ 11 écrans HTML
-- ✅ 55 workflows Alpine.js  
-- ✅ 1 backend Node.js
+- 🤖 **Génération IA** de scripts de candidature personnalisés (Ollama)
+- 📝 **Profil candidat** pour scripts sur-mesure
+- 📋 **Kanban** pour organiser vos candidatures (drag & drop)
+- 🚀 **Mode Rafale** pour postuler en série rapidement
+- 💾 **Offline-first** avec PouchDB (fonctionne sans connexion)
+- 🔄 **Sync temps réel** avec CouchDB
+- 🎨 **Design rétro** style Rambo/action movie
+- 🔌 **Extension navigateur** pour ajout rapide
 
 ## 🏗️ Architecture
 
 ```
-cv_rambo/
-├── frontend/              # Application frontend
-│   ├── index.html         # Container global
-│   ├── global/            # Workflows transverses (13)
-│   ├── onboarding/        # Onboarding 3 étapes (4)
-│   ├── tableau-bord/      # Stats QG Tactique (2)
-│   ├── arsenal-cv/        # Gestion CV (6)
-│   ├── capture-offre/     # Capture offres (5)
-│   ├── kanban/            # Board 4 colonnes (7)
-│   ├── mode-journaliste/  # IA Ollama (3)
-│   ├── mode-rafale/       # Candidatures auto (4)
-│   ├── pre-remplissage/   # Remplissage formulaires (4)
-│   ├── export-cv/         # Export Word (1)
-│   └── settings/          # Paramètres (5)
-│
-├── backend/               # Serveur Node.js
-│   └── proxy-ollama/      # Proxy API Ollama
-│
-├── specs/                 # Spécifications
-│   └── _app/              # Specs des workflows
-│
-└── validate-all.sh        # Script de validation
+cv-rambo/
+├── frontend/           # Alpine.js + PouchDB (7 écrans)
+├── backend/            # Node.js + Express + Ollama
+├── extension/          # Chrome/Firefox extension
+└── scripts/            # Utilitaires (backup, health-check)
 ```
 
-## 🚀 Démarrage
+## 🚀 Démarrage Rapide
+
+### Prérequis (uniquement Node.js)
+
+- **Node.js 18+** (seul prérequis !)
+- CouchDB (voir installation ci-dessous)
+- Ollama (optionnel, pour génération IA)
+
+### 1. Installation
 
 ```bash
-# Tout démarrer (backend + instructions)
-./start.sh
-
-# Ou manuellement
-node backend/proxy-ollama/code/index.js
+# Une seule commande
+./install.sh
 ```
 
-## 📊 Résumé par Phase
+### 2. Installer CouchDB
 
-| Phase | Écran | Workflows | Description |
-|-------|-------|-----------|-------------|
-| 1 | global | 13 | Fondations (PouchDB, thème, erreurs) |
-| 2 | onboarding | 4 | Premier contact utilisateur |
-| 3 | tableau-bord | 2 | Stats et graphiques |
-| 4 | arsenal-cv | 6 | Gestion CV dynamique |
-| 5 | capture-offre | 5 | Détection et capture |
-| 6 | kanban | 7 | Board drag & drop |
-| 7 | mode-journaliste | 3 | IA enrichissement |
-| 8 | mode-rafale | 4 | Candidatures batch |
-| 9 | pre-remplissage | 4 | Formulaires auto |
-| 10 | export/settings | 6 | Export et config |
-| 11 | backend | 1 | Proxy Ollama |
-
-## 🛠️ Technologies
-
-- **Frontend** : Alpine.js, PouchDB, CSS custom (thème rétro)
-- **Backend** : Node.js (proxy API Ollama)
-- **Stockage** : PouchDB (IndexedDB)
-- **IA** : Ollama (via proxy)
-
-## 📁 Scripts utiles
-
-| Script | Usage |
-|--------|-------|
-| `./start.sh` | Démarrage automatique |
-| `./validate-all.sh` | Validation des workflows |
-| `./build.sh` | Packager l'extension (.zip) |
-
-## 📁 Workflows
-
-Chaque workflow suit la structure :
-```
-workflows/[nom]/
-├── code/index.js          # Mega-fonction Alpine.js
-└── scenarios-to-validate/ # Scripts validation
+**macOS:**
+```bash
+brew install couchdb
+brew services start couchdb
 ```
 
-## ✨ Features
+**Ubuntu/Debian:**
+```bash
+sudo apt install couchdb
+sudo systemctl start couchdb
+```
 
-- 🎨 **Thème rétro 80s** : Rouge, vert militaire, or, typographie Bebas Neue
-- 💾 **Offline first** : PouchDB pour stockage local
-- 🤖 **IA intégrée** : Ollama pour enrichissement CV
-- 📱 **Extension Chrome** : Injection dans pages d'offres
-- 🎯 **Kanban tactique** : 4 colonnes avec drag & drop
-- 🏷️ **Tags** : Catégorisation des cibles
-- ⚡ **Mode rafale** : Candidatures automatiques
+**Configuration:**
+```bash
+# Créer l'admin
+curl -X PUT http://localhost:5984/_node/_local/_config/admins/admin -d '"admin"'
 
----
+# Créer la base cv-rambo
+curl -X PUT http://admin:admin@localhost:5984/cv-rambo
+```
 
-**Date** : 2024
-**Statut** : ✅ Complet et validé
+**Alternative:** Utilisez [Cloudant](https://www.ibm.com/cloud/cloudant) (CouchDB cloud, free tier disponible)
+
+### 3. Installer Ollama (optionnel)
+
+```bash
+# macOS/Linux
+curl -fsSL https://ollama.com/install.sh | sh
+
+# Télécharger modèle
+ollama pull llama2
+
+# Démarrer
+ollama serve
+```
+
+### 4. Lancer l'application
+
+**Terminal 1 - Backend:**
+```bash
+make backend
+# ou: cd backend && npm start
+```
+
+**Terminal 2 - Frontend:**
+```bash
+make frontend
+# ou: cd frontend && npm start
+```
+
+**Accès:** http://localhost:8080
+
+## 🛠️ Stack Technique
+
+### Frontend
+- **Alpine.js** 3.x - Framework réactif léger
+- **PouchDB** 8.x - Base locale offline-first
+- **Pure CSS** - Design rétro custom
+- **Serveur:** Node.js (`serve`)
+
+### Backend
+- **Node.js** + **Express** - Serveur API
+- **Ollama** - IA locale pour génération
+- **CouchDB** - Base de données synchronisée
+
+## 📖 Documentation
+
+- [Frontend README](frontend/README.md)
+- [Backend README](backend/README.md)
+- [Guide de test](frontend/TESTING.md)
+- [Guide contribution](frontend/CONTRIBUTING.md)
+
+## 🎮 Usage
+
+1. **Créez votre profil** dans Arsenal
+2. **Ajoutez une URL** d'offre d'emploi (ou via l'extension)
+3. **Attendez** que l'IA génère le script (10-40s)
+4. **Ouvrez** l'offre dans un nouvel onglet
+5. **Copiez-collez** le script dans la console (F12)
+6. **Postulez** rapidement !
+
+## 🔧 Configuration
+
+### Frontend
+Éditer `frontend/global/workflows/sync-couchdb/code/index.js`:
+```javascript
+config: {
+  remoteUrl: 'http://localhost:5984/cv-rambo',
+  auth: { username: 'admin', password: 'admin' }
+}
+```
+
+### Backend
+Créer `backend/.env`:
+```env
+COUCHDB_URL=http://localhost:5984
+COUCHDB_DB=cv-rambo
+COUCHDB_USER=admin
+COUCHDB_PASSWORD=admin
+OLLAMA_URL=http://localhost:11434
+OLLAMA_MODEL=llama2
+PORT=3000
+```
+
+## 🧪 Tests
+
+```bash
+# Tests E2E Frontend
+cd frontend/tests
+npm install
+npm test
+
+# Health check
+make health
+
+# Backup données
+make backup
+```
+
+## 🧰 Commandes
+
+| Commande | Description |
+|----------|-------------|
+| `make install` | Installation complète |
+| `make dev` | Mode développement (2 terminaux) |
+| `make backend` | Backend uniquement (port 3000) |
+| `make frontend` | Frontend uniquement (port 8080) |
+| `make test` | Tests E2E |
+| `make backup` | Sauvegarde CouchDB |
+| `make restore` | Restauration |
+| `make health` | Vérifier services |
+| `make clean` | Nettoyer dépendances |
+
+## 🐛 Troubleshooting
+
+| Problème | Solution |
+|----------|----------|
+| CouchDB refuse connexion | `brew services start couchdb` ou `sudo systemctl start couchdb` |
+| PouchDB not loaded | Rafraîchir la page |
+| Ollama timeout | Vérifier `ollama serve` |
+| CORS error | CouchDB config: `enable_cors = true` |
+| Port 8080 occupé | `cd frontend && npm run dev` (utilise port disponible) |
+
+## 📝 License
+
+MIT
+
+## 🙏 Remerciements
+
+- [Alpine.js](https://alpinejs.dev/)
+- [PouchDB](https://pouchdb.com/)
+- [Ollama](https://ollama.com/)
+- [Serve](https://github.com/vercel/serve) (serveur statique)

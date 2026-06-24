@@ -1,250 +1,192 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CV Rambo - Container Global</title>
-  
-  <!-- Google Fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Roboto+Condensed:wght@400;700&display=swap" rel="stylesheet">
-  
-  <!-- PouchDB -->
-  <script src="https://cdn.jsdelivr.net/npm/pouchdb@8.0.1/dist/pouchdb.min.js"></script>
-  
-  <!-- Alpine.js -->
-  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-  
-  <!-- Workflows Globaux -->
-  <script src="global/workflows/initialiser-pouchdb/code/index.js"></script>
-  <script src="global/workflows/appliquer-theme/code/index.js"></script>
-  <script src="global/workflows/capter-erreur/code/index.js"></script>
-  <script src="global/workflows/stocker-erreur/code/index.js"></script>
-  <script src="global/workflows/afficher-toast-erreur/code/index.js"></script>
-  <script src="global/workflows/afficher-toast-succes/code/index.js"></script>
-  <script src="global/workflows/afficher-loader-munitions/code/index.js"></script>
-  <script src="global/workflows/animer-recul/code/index.js"></script>
-  <script src="global/workflows/sauvegarder-donnees/code/index.js"></script>
-  <script src="global/workflows/restaurer-etat/code/index.js"></script>
-  <script src="global/workflows/reessayer-ollama/code/index.js"></script>
-  <script src="global/workflows/exporter-logs/code/index.js"></script>
-  
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CV Rambo - Application</title>
     
-    body {
-      font-family: 'Roboto Condensed', sans-serif;
-      background: transparent;
-    }
+    <script src="https://cdn.jsdelivr.net/npm/pouchdb@8.0.1/dist/pouchdb.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/pouchdb-find@8.0.1/dist/pouchdb.find.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.3/dist/cdn.min.js"></script>
     
-    #cv-rambo-container {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      z-index: 999999;
-    }
+    <script src="config.js"></script>
+    <script src="global/workflows/initialiser-pouchdb/code/index.js"></script>
+    <script src="global/workflows/sync-couchdb/code/index.js"></script>
+    <script src="global/components/toast.js"></script>
     
-    /* Écran actif */
-    .screen {
-      display: none;
-      width: 100%;
-      height: 100%;
-    }
+    <link rel="stylesheet" href="global/styles.css">
+    <link rel="stylesheet" href="global/components/toast-styles.css">
     
-    .screen.active {
-      display: block;
-    }
-    
-    /* Loading initial */
-    .initial-loader {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      background: linear-gradient(135deg, #1a1a1a 0%, #0a0a0a 100%);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      z-index: 9999999;
-    }
-    
-    .initial-loader.hidden {
-      display: none;
-    }
-    
-    .loader-title {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 48px;
-      color: #FFD700;
-      letter-spacing: 8px;
-      text-transform: uppercase;
-      margin-bottom: 20px;
-      animation: pulse 1.5s ease-in-out infinite;
-    }
-    
-    .loader-subtitle {
-      font-family: 'Roboto Condensed', sans-serif;
-      color: #2E8B57;
-      font-size: 18px;
-      letter-spacing: 4px;
-    }
-    
-    @keyframes pulse {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.5; }
-    }
-  </style>
-</head>
-<body x-data="appContainer()" x-init="initApp()">
-  
-  <!-- Loader Initial -->
-  <div class="initial-loader" x-show="loading" x-transition:leave="fade">
-    <div class="loader-title">CV RAMBO</div>
-    <div class="loader-subtitle">INITIALISATION DU SYSTÈME...</div>
-  </div>
-  
-  <!-- Container Principal -->
-  <div id="cv-rambo-container" x-data="{
-    ...workflowInitialiserPouchdb(),
-    ...workflowAppliquerTheme(),
-    ...workflowCapterErreur(),
-    ...workflowStockerErreur(),
-    ...workflowAfficherToastErreur(),
-    ...workflowAfficherToastSucces(),
-    ...workflowAfficherLoaderMunitions(),
-    ...workflowAnimerRecul(),
-    ...workflowSauvegarderDonnees(),
-    ...workflowRestaurerEtat(),
-    ...workflowReessayerOllama(),
-    ...workflowExporterLogs()
-  }" x-init="
-    $nextTick(() => {
-      init();
-      initialiserPouchdb();
-      initialiserSauvegarde();
-      initialiserStockageErreurs();
-      initialiserToastErreur();
-      initialiserToastSucces();
-      initialiserLoader();
-      initialiserRecul();
-      initialiserRetry();
-      initialiserExport();
-    })
-  ">
-    
-    <!-- Écran Onboarding (affiché si première utilisation) -->
-    <iframe 
-      x-show="currentScreen === 'onboarding'"
-      src="onboarding/index.html"
-      class="screen"
-      :class="{ 'active': currentScreen === 'onboarding' }"
-      style="width: 100%; height: 100%; border: none;"
-    ></iframe>
-    
-    <!-- Écran Tableau de Bord (accueil après onboarding) -->
-    <iframe 
-      x-show="currentScreen === 'tableau-bord'"
-      src="tableau-bord/index.html"
-      class="screen"
-      :class="{ 'active': currentScreen === 'tableau-bord' }"
-      style="width: 100%; height: 100%; border: none;"
-    ></iframe>
-    
-    <!-- Écran Arsenal CV -->
-    <iframe 
-      x-show="currentScreen === 'arsenal-cv'"
-      src="arsenal-cv/index.html"
-      class="screen"
-      :class="{ 'active': currentScreen === 'arsenal-cv' }"
-      style="width: 100%; height: 100%; border: none;"
-    ></iframe>
-    
-    <!-- Écran Kanban -->
-    <iframe 
-      x-show="currentScreen === 'kanban'"
-      src="kanban/index.html"
-      class="screen"
-      :class="{ 'active': currentScreen === 'kanban' }"
-      style="width: 100%; height: 100%; border: none;"
-    ></iframe>
-    
-    <!-- Écran Capture Offre -->
-    <iframe 
-      x-show="currentScreen === 'capture-offre'"
-      src="capture-offre/index.html"
-      class="screen"
-      :class="{ 'active': currentScreen === 'capture-offre' }"
-      style="width: 100%; height: 100%; border: none;"
-    ></iframe>
-    
-    <!-- Écran Settings -->
-    <iframe 
-      x-show="currentScreen === 'settings'"
-      src="settings/index.html"
-      class="screen"
-      :class="{ 'active': currentScreen === 'settings' }"
-      style="width: 100%; height: 100%; border: none;"
-    ></iframe>
-    
-  </div>
-  
-  <script>
-    function appContainer() {
-      return {
-        loading: true,
-        currentScreen: 'onboarding',
-        onboardingComplete: false,
-        
-        async initApp() {
-          console.log('[APP] Initialisation...');
-          
-          // Attendre que les workflows globaux soient prêts
-          await new Promise(resolve => setTimeout(resolve, 500));
-          
-          // Vérifier si onboarding déjà fait
-          this.checkOnboardingStatus();
-          
-          // Masquer le loader
-          this.loading = false;
-          
-          // Écouter les changements d'écran
-          window.addEventListener('cv-rambo:navigate', (e) => {
-            this.navigateTo(e.detail.screen);
-          });
-          
-          window.addEventListener('cv-rambo:app-unlocked', () => {
-            this.onboardingComplete = true;
-            this.navigateTo('tableau-bord');
-          });
-          
-          console.log('[APP] Prêt');
-        },
-        
-        async checkOnboardingStatus() {
-          // Vérification via les stores Alpine
-          const appState = Alpine.store('appState');
-          if (appState?.restored && appState.data?.profil) {
-            this.onboardingComplete = true;
-            this.currentScreen = 'tableau-bord';
-          }
-        },
-        
-        navigateTo(screen) {
-          this.currentScreen = screen;
-          console.log('[NAVIGATION] Écran:', screen);
+    <style>
+        .landing {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            text-align: center;
+            padding: 20px;
         }
-      }
-    }
-  </script>
-  
+        
+        .landing-logo {
+            font-family: 'Impact', sans-serif;
+            font-size: 4rem;
+            color: var(--rambo-red);
+            text-shadow: 4px 4px 0 var(--gold);
+            margin-bottom: 20px;
+        }
+        
+        .landing-tagline {
+            font-size: 1.2rem;
+            color: #888;
+            margin-bottom: 40px;
+            max-width: 500px;
+        }
+        
+        .landing-nav {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            max-width: 600px;
+            width: 100%;
+        }
+        
+        .landing-nav a {
+            background: var(--bg-dark);
+            border: 2px solid var(--border-color);
+            padding: 25px;
+            color: var(--text-white);
+            text-decoration: none;
+            transition: all 0.3s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .landing-nav a:hover {
+            border-color: var(--rambo-red);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 20px rgba(255, 0, 0, 0.2);
+        }
+        
+        .landing-nav .icon {
+            font-size: 2rem;
+        }
+        
+        .landing-nav .label {
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        
+        .landing-nav .desc {
+            font-size: 0.85rem;
+            color: #666;
+        }
+        
+        .db-status {
+            margin-top: 30px;
+            padding: 15px 25px;
+            background: var(--bg-dark);
+            border: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .db-status.ready {
+            border-color: var(--camouflage-green);
+        }
+        
+        .status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--status-processing);
+            animation: pulse 1.5s infinite;
+        }
+        
+        .db-status.ready .status-indicator {
+            background: var(--camouflage-green);
+            animation: none;
+        }
+        
+        @media (max-width: 600px) {
+            .landing-nav {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="landing" 
+         x-data="{ 
+             ...pouchdbInitializer(), 
+             ...couchdbSync(),
+             ...toastContainer()
+         }" 
+         x-init="$data.init(); init();"
+         @db:ready="toast.success('Base de données prête')">
+        
+        <div class="landing-logo">🔫 CV RAMBO</div>
+        
+        <p class="landing-tagline">
+            L'arsenal ultime pour votre recherche d'emploi. 
+            Générez des scripts de candidature personnalisés et postulez en masse.
+        </p>
+        
+        <nav class="landing-nav">
+            <a href="dashboard/index.html">
+                <span class="icon">📊</span>
+                <span class="label">Dashboard</span>
+                <span class="desc">Vue d'ensemble de vos cibles</span>
+            </a>
+            
+            <a href="ajout-url/index.html">
+                <span class="icon">➕</span>
+                <span class="label">Nouvelle Cible</span>
+                <span class="desc">Ajouter une offre d'emploi</span>
+            </a>
+            
+            <a href="kanban/index.html">
+                <span class="icon">📋</span>
+                <span class="label">Kanban</span>
+                <span class="desc">Organisez vos candidatures</span>
+            </a>
+            
+            <a href="mode-rafale/index.html">
+                <span class="icon">🚀</span>
+                <span class="label">Mode Rafale</span>
+                <span class="desc">Postulez en série</span>
+            </a>
+            
+            <a href="arsenal/index.html">
+                <span class="icon">⚔️</span>
+                <span class="label">Mon Arsenal</span>
+                <span class="desc">Votre profil candidat</span>
+            </a>
+            
+            <a href="settings/index.html">
+                <span class="icon">⚙️</span>
+                <span class="label">Paramètres</span>
+                <span class="desc">Configuration et export</span>
+            </a>
+        </nav>
+        
+        <div class="db-status" :class="{ ready: isReady }" x-show="isReady || error">
+            <div class="status-indicator"></div>
+            <span x-text="error ? 'Erreur: ' + error : 'PouchDB prêt • Sync active'">Initialisation...</span>
+        </div>
+        
+        <!-- Toast Container -->
+        <div class="toast-container">
+            <template x-for="toast in toasts" :key="toast.id">
+                <div class="toast" :class="[toast.type, { hiding: !toast.showing }]">
+                    <span class="toast-close" @click="remove(toast.id)">×</span>
+                    <span x-text="toast.message"></span>
+                </div>
+            </template>
+        </div>
+    </div>
 </body>
 </html>

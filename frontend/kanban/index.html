@@ -1,413 +1,434 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CV Rambo - Kanban</title>
-  
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Roboto+Condensed:wght@400;700&display=swap" rel="stylesheet">
-  
-  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/pouchdb@8.0.1/dist/pouchdb.min.js"></script>
-  
-  <script src="workflows/charger-cibles/code/index.js"></script>
-  <script src="workflows/deplacer-cible/code/index.js"></script>
-  <script src="workflows/mettre-a-jour-statut/code/index.js"></script>
-  <script src="workflows/ajouter-tag/code/index.js"></script>
-  <script src="workflows/retirer-tag/code/index.js"></script>
-  <script src="workflows/filtrer-par-tag/code/index.js"></script>
-  <script src="workflows/valider-drop/code/index.js"></script>
-  
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    :root {
-      --rambo-red: #FF0000;
-      --camo-green: #2E8B57;
-      --gunmetal-gray: #2F4F4F;
-      --gold: #FFD700;
-      --black: #0a0a0a;
-      --white: #f5f5f5;
-    }
-    body {
-      font-family: 'Roboto Condensed', sans-serif;
-      background: linear-gradient(135deg, var(--gunmetal-gray) 0%, var(--black) 100%);
-      min-height: 100vh;
-      color: var(--white);
-      padding: 40px 20px;
-    }
-    .kanban-container {
-      max-width: 1400px;
-      margin: 0 auto;
-    }
-    h1 {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 48px;
-      color: var(--gold);
-      text-transform: uppercase;
-      letter-spacing: 6px;
-      text-align: center;
-      margin-bottom: 10px;
-    }
-    .subtitle {
-      color: var(--camo-green);
-      letter-spacing: 4px;
-      text-align: center;
-      margin-bottom: 30px;
-    }
-    .filter-bar {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 20px;
-      flex-wrap: wrap;
-      align-items: center;
-    }
-    .filter-label {
-      color: var(--gold);
-      font-family: 'Bebas Neue', sans-serif;
-      letter-spacing: 2px;
-    }
-    .filter-tag {
-      padding: 5px 12px;
-      border: 1px solid var(--gold);
-      background: transparent;
-      color: var(--gold);
-      cursor: pointer;
-      font-family: 'Roboto Condensed', sans-serif;
-    }
-    .filter-tag.active {
-      background: var(--gold);
-      color: var(--black);
-    }
-    .btn-clear {
-      background: transparent;
-      border: 1px solid var(--rambo-red);
-      color: var(--rambo-red);
-      padding: 5px 12px;
-      cursor: pointer;
-      font-family: 'Bebas Neue', sans-serif;
-    }
-    .board {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 20px;
-      margin-top: 30px;
-    }
-    .column {
-      background: rgba(0, 0, 0, 0.4);
-      border: 1px solid #444;
-      min-height: 400px;
-      padding: 15px;
-    }
-    .column.drag-over {
-      border-color: var(--gold);
-      background: rgba(255, 215, 0, 0.1);
-    }
-    .column.restricted {
-      border-color: var(--rambo-red);
-      opacity: 0.7;
-    }
-    .column-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 15px;
-      padding-bottom: 10px;
-      border-bottom: 2px solid var(--gold);
-    }
-    .column-title {
-      font-family: 'Bebas Neue', sans-serif;
-      color: var(--gold);
-      font-size: 18px;
-      letter-spacing: 2px;
-    }
-    .column-count {
-      background: var(--camo-green);
-      color: white;
-      padding: 2px 8px;
-      font-size: 12px;
-      font-weight: bold;
-    }
-    .card {
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid #555;
-      padding: 15px;
-      margin-bottom: 10px;
-      cursor: grab;
-      transition: all 0.2s;
-    }
-    .card:hover {
-      border-color: var(--gold);
-    }
-    .card.dragging {
-      opacity: 0.5;
-      cursor: grabbing;
-    }
-    .card.hidden {
-      display: none;
-    }
-    .card-title {
-      color: var(--white);
-      font-weight: bold;
-      margin-bottom: 5px;
-    }
-    .card-company {
-      color: var(--camo-green);
-      font-size: 14px;
-      margin-bottom: 10px;
-    }
-    .card-tags {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 5px;
-      margin-bottom: 10px;
-    }
-    .card-tag {
-      background: rgba(255, 215, 0, 0.2);
-      border: 1px solid var(--gold);
-      color: var(--gold);
-      padding: 2px 6px;
-      font-size: 11px;
-      display: flex;
-      align-items: center;
-      gap: 4px;
-    }
-    .card-tag button {
-      background: none;
-      border: none;
-      color: var(--gold);
-      cursor: pointer;
-      font-size: 10px;
-    }
-    .card-actions {
-      display: flex;
-      gap: 5px;
-    }
-    .btn-card {
-      flex: 1;
-      padding: 5px;
-      font-size: 12px;
-      cursor: pointer;
-      border: 1px solid var(--gold);
-      background: transparent;
-      color: var(--gold);
-    }
-    .btn-card:hover {
-      background: var(--gold);
-      color: var(--black);
-    }
-    .loading {
-      text-align: center;
-      padding: 60px;
-    }
-    .spinner {
-      width: 60px;
-      height: 60px;
-      border: 4px solid var(--gold);
-      border-top-color: transparent;
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-      margin: 0 auto 20px;
-    }
-    @keyframes spin { to { transform: rotate(360deg); } }
-    .empty-state {
-      text-align: center;
-      padding: 40px;
-      color: #666;
-      font-style: italic;
-    }
-    .tag-menu {
-      position: fixed;
-      background: linear-gradient(135deg, var(--gunmetal-gray) 0%, #1a1a1a 100%);
-      border: 2px solid var(--gold);
-      padding: 20px;
-      z-index: 9999;
-      min-width: 250px;
-    }
-    .tag-menu h3 {
-      color: var(--gold);
-      font-family: 'Bebas Neue', sans-serif;
-      margin-bottom: 15px;
-    }
-    .tag-options {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      margin-bottom: 15px;
-    }
-    .tag-option {
-      padding: 8px 12px;
-      border: 1px solid #555;
-      background: transparent;
-      color: var(--white);
-      cursor: pointer;
-      text-align: left;
-    }
-    .tag-option:hover {
-      border-color: var(--gold);
-    }
-    .tag-input {
-      width: 100%;
-      padding: 8px;
-      background: #1a1a1a;
-      border: 1px solid var(--gold);
-      color: var(--white);
-      margin-bottom: 10px;
-    }
-    @media (max-width: 1200px) {
-      .board { grid-template-columns: repeat(2, 1fr); }
-    }
-    @media (max-width: 768px) {
-      .board { grid-template-columns: 1fr; }
-    }
-    [x-cloak] { display: none !important; }
-  </style>
-</head>
-<body x-data="kanbanScreen()" x-init="init()"
-      x-data="{...workflowChargerCibles(),...workflowDeplacerCible(),...workflowMettreAJourStatut(),...workflowAjouterTag(),...workflowRetirerTag(),...workflowFiltrerParTag(),...workflowValiderDrop()}"
-      x-init="$nextTick(()=>{init();})">
-  
-  <div class="kanban-container">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CV Rambo - Kanban</title>
     
-    <h1>🎯 KANBAN TACTIQUE</h1>
-    <p class="subtitle">ORGANISE TES CIBLES</p>
+    <script src="https://cdn.jsdelivr.net/npm/pouchdb@8.0.1/dist/pouchdb.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/pouchdb-find@8.0.1/dist/pouchdb.find.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.3/dist/cdn.min.js"></script>
     
-    <!-- Filtres -->
-    <div class="filter-bar" x-show="!loading">
-      <span class="filter-label">FILTRER PAR TAG:</span>
-      <template x-for="tag in availableTags" :key="tag">
-        <button class="filter-tag" 
-                :class="{ 'active': activeFilter === tag }"
-                @click="filtrerParTag(tag)"
-                x-text="tag"></button>
-      </template>
-      <button class="btn-clear" @click="reinitialiserFiltre()" x-show="activeFilter">
-        ✕ RÉINITIALISER
-      </button>
-    </div>
+    <script src="../config.js"></script>
     
-    <!-- Loading -->
-    <div x-show="loading" class="loading" x-cloak>
-      <div class="spinner"></div>
-      <p style="color: var(--gold);">Chargement des cibles...</p>
-    </div>
+    <script src="../global/workflows/initialiser-pouchdb/code/index.js"></script>
+    <script src="workflows/charger-kanban/code/index.js"></script>
+    <script src="workflows/deplacer-carte/code/index.js"></script>
     
-    <!-- Board -->
-    <div x-show="!loading" class="board" x-cloak>
-      
-      <template x-for="(cibles, columnName) in $store.kanbanData.columns" :key="columnName">
-        <div class="column" 
-             :class="{ 'restricted': columnName === 'En attente', 'drag-over': dragOverColumn === columnName }"
-             @dragover.prevent="dragOverColumn = columnName; onDragOver(columnName)"
-             @dragleave="dragOverColumn = null"
-             @drop.prevent="handleDrop(columnName)">
-          
-          <div class="column-header">
-            <span class="column-title" x-text="columnName"></span>
-            <span class="column-count" x-text="getVisibleCount(cibles)">0</span>
-          </div>
-          
-          <div class="cards-list">
-            <template x-for="cible in cibles" :key="cible._id">
-              <div class="card" 
-                   :class="{ 'hidden': cible.hidden, 'dragging': draggedId === cible._id }"
-                   draggable="true"
-                   @dragstart="startDrag(cible._id, columnName)"
-                   x-show="!cible.hidden">
-                
-                <div class="card-title" x-text="cible.title || 'Sans titre'"></div>
-                <div class="card-company" x-text="cible.company || 'Entreprise inconnue'"></div>
-                
-                <div class="card-tags" x-show="cible.tags && cible.tags.length > 0">
-                  <template x-for="tag in cible.tags" :key="tag">
-                    <span class="card-tag">
-                      <span x-text="tag"></span>
-                      <button @click="$data.workflowRetirerTag().retirerTag(cible, tag)">×</button>
-                    </span>
-                  </template>
-                </div>
-                
-                <div class="card-actions">
-                  <button class="btn-card" @click="ouvrirMenuTag(cible)">+ TAG</button>
-                  <button class="btn-card" @click="navigateToCapture(cible.url)">VOIR →</button>
-                </div>
-              </div>
-            </template>
-            
-            <div x-show="getVisibleCount(cibles) === 0" class="empty-state">
-              Aucune cible
-            </div>
-          </div>
-          
-        </div>
-      </template>
-      
-    </div>
-    
-    
-    <!-- Menu Tag -->
-    <div x-show="tagMenuOpen" class="tag-menu" x-cloak
-         x-data="$data.workflowAjouterTag()"
-         x-transition
-         style="top: 50%; left: 50%; transform: translate(-50%, -50%);">
-      <h3>AJOUTER UN TAG</h3>
-      
-      <div class="tag-options">
-        <template x-for="tag in defaultTags" :key="tag">
-          <button class="tag-option" @click="ajouterTag(tag); tagMenuOpen = false" x-text="tag"></button>
-        </template>
-      </div>
-      
-      <input type="text" class="tag-input" x-model="newTag" placeholder="Ou saisissez un nouveau tag...">
-      
-      <div style="display: flex; gap: 10px;">
-        <button class="btn-card" @click="tagMenuOpen = false" style="flex: 1;">ANNULER</button>
-        <button class="btn-card" @click="ajouterTag(); tagMenuOpen = false" style="flex: 2;">AJOUTER</button>
-      </div>
-      
-    </div>
-    
-  </div>
-  
-  <script>
-    function kanbanScreen() {
-      return {
-        loading: true,
-        dragOverColumn: null,
-        availableTags: ['#CiblePrioritaire', '#MissionImpossible', '#ÀRelancer', '#Entretien'],
-        
-        init() {
-          this.$watch(() => this.$store.kanbanData?.loading, (value) => {
-            if (value !== undefined) this.loading = value;
-          });
-        },
-        
-        getVisibleCount(cibles) {
-          return cibles.filter(c => !c.hidden).length;
-        },
-        
-        async handleDrop(targetColumn) {
-          this.dragOverColumn = null;
-          
-          // Vérifier si le drop est autorisé
-          const canDrop = this.$data.workflowValiderDrop().canDrop(targetColumn);
-          if (!canDrop) return;
-          
-          // Effectuer le drop
-          await this.$data.workflowDeplacerCible().dropCard(targetColumn);
-        },
-        
-        ouvrirMenuTag(cible) {
-          this.$data.workflowAjouterTag().ouvrirMenuTag(cible);
-        },
-        
-        navigateToCapture(url) {
-          window.open(url, '_blank');
+    <style>
+        :root {
+            --rambo-red: #FF0000;
+            --camouflage-green: #2E8B57;
+            --gunmetal-gray: #2F4F4F;
+            --gold: #FFD700;
+            --text-white: #FFFFFF;
+            --status-new: #FFA500;
+            --status-processing: #3498db;
+            --status-ready: #2ecc71;
+            --status-applied: #95a5a6;
+            --status-error: #e74c3c;
+            --bg-dark: #1a1a1a;
+            --border-color: #333;
         }
-      }
-    }
-  </script>
-  
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Courier New', monospace;
+            background: var(--gunmetal-gray);
+            color: var(--text-white);
+            min-height: 100vh;
+        }
+        
+        .layout {
+            display: flex;
+            min-height: 100vh;
+        }
+        
+        .sidebar {
+            width: 220px;
+            background: var(--bg-dark);
+            border-right: 2px solid var(--rambo-red);
+            padding: 20px 0;
+            flex-shrink: 0;
+        }
+        
+        .logo {
+            text-align: center;
+            padding: 0 20px 20px;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 20px;
+        }
+        
+        .logo h1 {
+            font-family: 'Impact', sans-serif;
+            color: var(--rambo-red);
+            font-size: 1.4rem;
+            text-shadow: 2px 2px 0 var(--gold);
+        }
+        
+        .nav-item {
+            display: block;
+            padding: 15px 20px;
+            color: var(--text-white);
+            text-decoration: none;
+            border-left: 3px solid transparent;
+            transition: all 0.3s;
+        }
+        
+        .nav-item:hover, .nav-item.active {
+            background: rgba(255, 0, 0, 0.1);
+            border-left-color: var(--rambo-red);
+        }
+        
+        .nav-item .icon { margin-right: 10px; }
+        
+        .main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        .header {
+            padding: 20px 30px;
+            background: var(--bg-dark);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .header h2 {
+            font-family: 'Impact', sans-serif;
+            font-size: 1.5rem;
+            color: var(--gold);
+            text-transform: uppercase;
+        }
+        
+        .btn-primary {
+            background: var(--rambo-red);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-family: inherit;
+            font-weight: bold;
+            cursor: pointer;
+            text-transform: uppercase;
+            box-shadow: 3px 3px 0 var(--gold);
+        }
+        
+        .kanban-board {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            padding: 20px 30px;
+            overflow-x: auto;
+            flex: 1;
+        }
+        
+        .kanban-column {
+            background: var(--bg-dark);
+            border: 1px solid var(--border-color);
+            min-height: 400px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .column-header {
+            padding: 15px;
+            border-bottom: 3px solid;
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .column-header.new { border-color: var(--status-new); color: var(--status-new); }
+        .column-header.processing { border-color: var(--status-processing); color: var(--status-processing); }
+        .column-header.ready { border-color: var(--status-ready); color: var(--status-ready); }
+        .column-header.applied { border-color: var(--status-applied); color: var(--status-applied); }
+        
+        .column-count {
+            background: rgba(255,255,255,0.1);
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+        }
+        
+        .column-content {
+            flex: 1;
+            padding: 10px;
+            overflow-y: auto;
+        }
+        
+        .column-content.drag-over {
+            background: rgba(255, 0, 0, 0.05);
+        }
+        
+        .kanban-card {
+            background: var(--gunmetal-gray);
+            border: 1px solid #444;
+            padding: 12px;
+            margin-bottom: 10px;
+            cursor: grab;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .kanban-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+        
+        .kanban-card.dragging {
+            opacity: 0.5;
+            cursor: grabbing;
+        }
+        
+        .card-title {
+            font-weight: bold;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+            line-height: 1.3;
+        }
+        
+        .card-meta {
+            font-size: 0.75rem;
+            color: #888;
+            margin-bottom: 8px;
+        }
+        
+        .card-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+        }
+        
+        .tag {
+            background: rgba(255, 215, 0, 0.2);
+            color: var(--gold);
+            padding: 2px 6px;
+            font-size: 0.7rem;
+            border-radius: 2px;
+        }
+        
+        .card-actions {
+            margin-top: 10px;
+            display: flex;
+            gap: 5px;
+        }
+        
+        .btn-card {
+            flex: 1;
+            background: transparent;
+            border: 1px solid #555;
+            color: #888;
+            padding: 5px;
+            font-family: inherit;
+            font-size: 0.75rem;
+            cursor: pointer;
+        }
+        
+        .btn-card:hover {
+            border-color: var(--rambo-red);
+            color: var(--rambo-red);
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #666;
+            font-style: italic;
+        }
+        
+        .loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+        
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid #333;
+            border-top-color: var(--rambo-red);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin { to { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+    <div class="layout" x-data="{ ...pouchdbInitializer(), ...kanbanLoader(), ...dragDrop() }" x-init="$data.init(); initKanban()">
+        
+        <aside class="sidebar">
+            <div class="logo">
+                <h1>🔫 CV RAMBO</h1>
+            </div>
+            <nav>
+                <a href="../dashboard/index.html" class="nav-item">
+                    <span class="icon">📊</span> Dashboard
+                </a>
+                <a href="../ajout-url/index.html" class="nav-item">
+                    <span class="icon">➕</span> Ajouter
+                </a>
+                <a href="#" class="nav-item active">
+                    <span class="icon">📋</span> Kanban
+                </a>
+                <a href="../mode-rafale/index.html" class="nav-item">
+                    <span class="icon">🚀</span> Rafale
+                </a>
+                <a href="../arsenal/index.html" class="nav-item">
+                    <span class="icon">⚔️</span> Arsenal
+                </a>
+                <a href="../settings/index.html" class="nav-item">
+                    <span class="icon">⚙️</span> Settings
+                </a>
+            </nav>
+        </aside>
+        
+        <main class="main">
+            <div class="header">
+                <h2>📋 Tableau Tactique</h2>
+                <button class="btn-primary" @click="window.location.href='../ajout-url/index.html'">➕ Ajouter</button>
+            </div>
+            
+            <div class="loading" x-show="loading">
+                <div class="spinner"></div>
+            </div>
+            
+            <div class="kanban-board" x-show="!loading" @dragover.prevent>
+                
+                <!-- Colonne: En attente -->
+                <div class="kanban-column">
+                    <div class="column-header new">
+                        🟡 En attente
+                        <span class="column-count" x-text="columns.new.length"></span>
+                    </div>
+                    <div class="column-content" 
+                         :class="{ 'drag-over': dragOverColumn === 'new' }"
+                         @dragover.prevent="dragOverColumn = 'new'"
+                         @dragleave="dragOverColumn = null"
+                         @drop.prevent="drop('new')">
+                        
+                        <template x-for="cible in columns.new" :key="cible._id">
+                            <div class="kanban-card" 
+                                 :class="{ dragging: draggedId === cible._id }"
+                                 draggable="true"
+                                 @dragstart="dragStart(cible._id, 'new')"
+                                 @dragend="dragEnd()"
+                                 @click="viewCible(cible._id)">
+                                <div class="card-title" x-text="cible.title || 'Sans titre'"></div>
+                                <div class="card-meta" x-text="cible.siteType || 'Générique'"></div>
+                                <div class="card-tags" x-show="cible.tags?.length">
+                                    <template x-for="tag in cible.tags.slice(0, 3)" :key="tag">
+                                        <span class="tag" x-text="tag"></span>
+                                    </template>
+                                </div>
+                            </div>
+                        </template>
+                        
+                        <div class="empty-state" x-show="columns.new.length === 0">Aucune cible</div>
+                    </div>
+                </div>
+                
+                <!-- Colonne: Script prêt -->
+                <div class="kanban-column">
+                    <div class="column-header ready">
+                        🟢 Script prêt
+                        <span class="column-count" x-text="columns['script-ready'].length"></span>
+                    </div>
+                    <div class="column-content"
+                         :class="{ 'drag-over': dragOverColumn === 'script-ready' }"
+                         @dragover.prevent="dragOverColumn = 'script-ready'"
+                         @dragleave="dragOverColumn = null"
+                         @drop.prevent="drop('script-ready')">
+                        
+                        <template x-for="cible in columns['script-ready']" :key="cible._id">
+                            <div class="kanban-card"
+                                 :class="{ dragging: draggedId === cible._id }"
+                                 draggable="true"
+                                 @dragstart="dragStart(cible._id, 'script-ready')"
+                                 @dragend="dragEnd()"
+                                 @click="viewCible(cible._id)">
+                                <div class="card-title" x-text="cible.title || 'Sans titre'"></div>
+                                <div class="card-meta" x-text="cible.siteType || 'Générique'"></div>
+                                <div class="card-actions">
+                                    <button class="btn-card" @click.stop="copyScript(cible)">📋 Copier</button>
+                                    <button class="btn-card" @click.stop="markApplied(cible._id)">✅ Postulé</button>
+                                </div>
+                            </div>
+                        </template>
+                        
+                        <div class="empty-state" x-show="columns['script-ready'].length === 0">Aucune cible</div>
+                    </div>
+                </div>
+                
+                <!-- Colonne: Postulé -->
+                <div class="kanban-column">
+                    <div class="column-header applied">
+                        ✅ Postulé
+                        <span class="column-count" x-text="columns.applied.length"></span>
+                    </div>
+                    <div class="column-content"
+                         :class="{ 'drag-over': dragOverColumn === 'applied' }"
+                         @dragover.prevent="dragOverColumn = 'applied'"
+                         @dragleave="dragOverColumn = null"
+                         @drop.prevent="drop('applied')">
+                        
+                        <template x-for="cible in columns.applied" :key="cible._id">
+                            <div class="kanban-card"
+                                 :class="{ dragging: draggedId === cible._id }"
+                                 draggable="true"
+                                 @dragstart="dragStart(cible._id, 'applied')"
+                                 @dragend="dragEnd()"
+                                 @click="viewCible(cible._id)">
+                                <div class="card-title" x-text="cible.title || 'Sans titre'"></div>
+                                <div class="card-meta" x-text="formatDate(cible.appliedAt)"></div>
+                            </div>
+                        </template>
+                        
+                        <div class="empty-state" x-show="columns.applied.length === 0">Aucune cible</div>
+                    </div>
+                </div>
+                
+                <!-- Colonne: Erreur -->
+                <div class="kanban-column">
+                    <div class="column-header" style="border-color: var(--status-error); color: var(--status-error);">
+                        🔴 Erreur
+                        <span class="column-count" x-text="columns.error.length"></span>
+                    </div>
+                    <div class="column-content"
+                         :class="{ 'drag-over': dragOverColumn === 'error' }"
+                         @dragover.prevent="dragOverColumn = 'error'"
+                         @dragleave="dragOverColumn = null"
+                         @drop.prevent="drop('error')">
+                        
+                        <template x-for="cible in columns.error" :key="cible._id">
+                            <div class="kanban-card"
+                                 :class="{ dragging: draggedId === cible._id }"
+                                 draggable="true"
+                                 @dragstart="dragStart(cible._id, 'error')"
+                                 @dragend="dragEnd()"
+                                 @click="viewCible(cible._id)">
+                                <div class="card-title" x-text="cible.title || 'Sans titre'"></div>
+                                <div class="card-meta" style="color: var(--status-red);" x-text="cible.errorMessage || 'Erreur'"></div>
+                                <div class="card-actions">
+                                    <button class="btn-card" @click.stop="retry(cible._id)">🔄 Réessayer</button>
+                                </div>
+                            </div>
+                        </template>
+                        
+                        <div class="empty-state" x-show="columns.error.length === 0">Aucune cible</div>
+                    </div>
+                </div>
+                
+            </div>
+        </main>
+    </div>
 </body>
 </html>

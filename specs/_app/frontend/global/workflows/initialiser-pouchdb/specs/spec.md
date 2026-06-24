@@ -1,114 +1,113 @@
----
-id: F-013-initialiser-pouchdb
-type: frontend
-folder: specs/_app/frontend/global/workflows/initialiser-pouchdb/
-description: Initialiser les bases de données PouchDB au démarrage de l'extension.
-depends_on: []
-screen: null
-global: true
-mockup_entry: null
----
-
-# F-013-initialiser-pouchdb : Initialiser PouchDB
+# Workflow : initialiser-pouchdb
 
 ## Description
+Initialise la base PouchDB locale, crée les indexes nécessaires, configure la sync avec CouchDB.
 
-Créer et configurer les bases de données PouchDB locales (profil, cibles, tags, settings, error-logs) au démarrage de l'extension Chrome.
+## Déclencheur
+Démarrage de l'application
+
+## Configuration requise
+```javascript
+const CONFIG = {
+  localDBName: 'cv-rambo',
+  remoteUrl: 'http://localhost:5984/cv-rambo',
+  auth: {
+    username: 'admin',
+    password: 'admin_password'
+  }
+};
+```
 
 ## Étapes
 
 ```javascript
 /**
- * @action Vérifier si PouchDB est disponible
- * @checkpoint pouchdb-available, la librairie PouchDB est chargée et accessible
- *
- * @implementation
- *   console.log('checkpoint:pouchdb-available:start');
- *   // ... exécution de l'action ...
- *   console.log('checkpoint:pouchdb-available:end');
+ * @checkpoint Créer instance PouchDB
  */
+import PouchDB from 'pouchdb-browser';
+import PouchDBFind from 'pouchdb-find';
+
+PouchDB.plugin(PouchDBFind);
+
+const db = new PouchDB(CONFIG.localDBName);
 
 /**
- * @action Créer la base de données "profil"
- * @checkpoint profil-db-created, new PouchDB('profil') retourne une instance valide
- *
- * @implementation
- *   console.log('checkpoint:profil-db-created:start');
- *   // ... exécution de l'action ...
- *   console.log('checkpoint:profil-db-created:end');
+ * @checkpoint Créer indexes pour requêtes
  */
+async function creerIndexes() {
+  await db.createIndex({
+    index: {
+      fields: ['type', 'status', 'createdAt'],
+      name: 'idx-type-status-date'
+    }
+  });
+  
+  await db.createIndex({
+    index: {
+      fields: ['type', 'url'],
+      name: 'idx-type-url'
+    }
+  });
+}
 
 /**
- * @action Créer la base de données "cibles"
- * @checkpoint cibles-db-created, new PouchDB('cibles') retourne une instance valide
- *
- * @implementation
- *   console.log('checkpoint:cibles-db-created:start');
- *   // ... exécution de l'action ...
- *   console.log('checkpoint:cibles-db-created:end');
+ * @checkpoint Configurer sync bidirectionnelle
  */
-
-/**
- * @action Créer la base de données "tags"
- * @checkpoint tags-db-created, new PouchDB('tags') retourne une instance valide
- *
- * @implementation
- *   console.log('checkpoint:tags-db-created:start');
- *   // ... exécution de l'action ...
- *   console.log('checkpoint:tags-db-created:end');
- */
-
-/**
- * @action Créer la base de données "settings"
- * @checkpoint settings-db-created, new PouchDB('settings') retourne une instance valide
- *
- * @implementation
- *   console.log('checkpoint:settings-db-created:start');
- *   // ... exécution de l'action ...
- *   console.log('checkpoint:settings-db-created:end');
- */
-
-/**
- * @action Créer la base de données "error-logs"
- * @checkpoint error-logs-db-created, new PouchDB('error-logs') retourne une instance valide
- *
- * @implementation
- *   console.log('checkpoint:error-logs-db-created:start');
- *   // ... exécution de l'action ...
- *   console.log('checkpoint:error-logs-db-created:end');
- */
-
-/**
- * @action Désactiver la synchronisation réseau par défaut
- * @checkpoint sync-disabled, aucune replication/Sync n'est activée automatiquement
- *
- * @implementation
- *   console.log('checkpoint:sync-disabled:start');
- *   // ... exécution de l'action ...
- *   console.log('checkpoint:sync-disabled:end');
- */
-
-/**
- * @action Stocker les instances dans le store global
- * @checkpoint dbs-stored, store.databases contient les références aux 5 bases PouchDB
- *
- * @implementation
- *   console.log('checkpoint:dbs-stored:start');
- *   // ... exécution de l'action ...
- *   console.log('checkpoint:dbs-stored:end');
- */
-
-/**
- * @action Logger l'initialisation
- * @checkpoint log-emitted, console affiche "[STORAGE] pouchdb-initialized"
- *
- * @implementation
- *   console.log('checkpoint:log-emitted:start');
- *   // ... exécution de l'action ...
- *   console.log('checkpoint:log-emitted:end');
- */
+function configurerSync() {
+  const remoteDB = new PouchDB(CONFIG.remoteUrl, {
+    auth: CONFIG.auth
+  });
+  
+  const sync = db.sync(remoteDB, {
+    live: true,
+    retry: true,
+    heartbeat: 10000,
+    back_off_function: (delay) => {
+      if (delay === 0) return 1000;
+      return Math.min(delay * 2, 60000);
+    }
+  });
+  
+  // Événements de sync
+  sync.on('change', (info) => {
+    console.log('[PouchDB] Sync change:', info);
+    window.dispatchEvent(new CustomEvent('db:change', { detail: info }));
+  });
+  
+  sync.on('paused', (err) => {
+    console.log('[PouchDB] Sync paused:', err);
+  });
+  
+  sync.on('active', () => {
+    console.log('[PouchDB] Sync active');
+  });
+  
+  sync.on('error', (err) => {
+    console.error('[PouchDB] Sync error:', err);
+    window.dispatchEvent(new CustomEvent('db:error', { detail: err }));
+  });
+  
+  return sync;
+}
 ```
 
-## Mockups de référence
+## Exposition globale
 
-- Global - exécuté en arrière-plan au démarrage de l'extension
+```javascript
+// Rend PouchDB disponible globalement
+window.db = db;
+
+// Helper pour les requêtes courantes
+window.dbUtils = {
+  async getCibles(filter) { /* ... */ },
+  async getCible(id) { /* ... */ },
+  async createCible(url) { /* ... */ },
+  async updateCible(id, updates) { /* ... */ }
+};
+```
+
+## Logs
+- `[PouchDB] initializing`
+- `[PouchDB] indexes-created`
+- `[PouchDB] sync-started`
+- `[PouchDB] ready`

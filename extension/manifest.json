@@ -1,0 +1,37 @@
+{
+  "manifest_version": 3,
+  "name": "CV Rambo - Ajout Rapide",
+  "version": "1.0.0",
+  "description": "Ajoutez rapidement des offres d'emploi à CV Rambo depuis n'importe quel site",
+  "permissions": [
+    "activeTab",
+    "storage",
+    "scripting"
+  ],
+  "host_permissions": [
+    "http://localhost:8080/*",
+    "https://*/jobs/*",
+    "https://*.linkedin.com/*",
+    "https://*.indeed.com/*",
+    "https://*.apec.fr/*"
+  ],
+  "action": {
+    "default_popup": "popup/popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content/scraper.js"]
+    }
+  ]
+}

@@ -1,0 +1,181 @@
+<!-- _app/frontend/ajout-url/mockups/input.html -->
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CV Rambo - Ajouter une cible</title>
+    <style>
+        :root {
+            --rambo-red: #FF0000;
+            --camouflage-green: #2E8B57;
+            --gunmetal-gray: #2F4F4F;
+            --gold: #FFD700;
+            --text-white: #FFFFFF;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Courier New', monospace;
+            background: var(--gunmetal-gray);
+            color: var(--text-white);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .container {
+            width: 90%;
+            max-width: 600px;
+        }
+        .card {
+            background: #1a1a1a;
+            border: 2px solid var(--rambo-red);
+            padding: 40px;
+            box-shadow: 8px 8px 0 rgba(0, 0, 0, 0.5);
+        }
+        h2 {
+            font-family: 'Impact', sans-serif;
+            font-size: 1.8rem;
+            color: var(--gold);
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+        .subtitle {
+            color: #888;
+            margin-bottom: 30px;
+        }
+        .form-group {
+            margin-bottom: 25px;
+        }
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+        .input-wrapper {
+            position: relative;
+        }
+        input[type="url"] {
+            width: 100%;
+            background: #2a2a2a;
+            border: 1px solid #555;
+            color: white;
+            padding: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 1rem;
+        }
+        input[type="url"]:focus {
+            outline: none;
+            border-color: var(--rambo-red);
+        }
+        input[type="url"].invalid {
+            border-color: #e74c3c;
+            background: rgba(231, 76, 60, 0.1);
+        }
+        .validation-msg {
+            color: #e74c3c;
+            font-size: 0.85rem;
+            margin-top: 8px;
+            display: none;
+        }
+        .validation-msg.visible {
+            display: block;
+        }
+        .btn-submit {
+            width: 100%;
+            background: var(--rambo-red);
+            color: white;
+            border: none;
+            padding: 15px;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            font-size: 1.1rem;
+            cursor: pointer;
+            text-transform: uppercase;
+            box-shadow: 4px 4px 0 var(--gold);
+            transition: all 0.2s;
+        }
+        .btn-submit:hover:not(:disabled) {
+            transform: translate(-2px, -2px);
+            box-shadow: 6px 6px 0 var(--gold);
+        }
+        .btn-submit:disabled {
+            background: #555;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+        .btn-submit.loading {
+            position: relative;
+            color: transparent;
+        }
+        .btn-submit.loading::after {
+            content: '⏳';
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            to { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+        .hint {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(46, 139, 87, 0.1);
+            border-left: 3px solid var(--camouflage-green);
+            font-size: 0.9rem;
+        }
+        .hint-icon {
+            margin-right: 8px;
+        }
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #888;
+            text-decoration: none;
+        }
+        .back-link:hover {
+            color: var(--gold);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="#" class="back-link">← Retour au Dashboard</a>
+        
+        <div class="card">
+            <h2>🎯 Nouvelle Cible</h2>
+            <p class="subtitle">Collez l'URL de l'offre d'emploi</p>
+            
+            <form id="ajout-form">
+                <div class="form-group">
+                    <label for="url">URL de l'offre</label>
+                    <div class="input-wrapper">
+                        <input 
+                            type="url" 
+                            id="url" 
+                            name="url" 
+                            placeholder="https://linkedin.com/jobs/view/..."
+                            autocomplete="off"
+                        >
+                    </div>
+                    <div class="validation-msg" id="error-msg">
+                        ⚠️ Veuillez entrer une URL valide (http:// ou https://)
+                    </div>
+                </div>
+                
+                <button type="submit" class="btn-submit" id="submit-btn">
+                    ➕ AJOUTER LA CIBLE
+                </button>
+            </form>
+            
+            <div class="hint">
+                <span class="hint-icon">💡</span>
+                <strong>Sites supportés :</strong> LinkedIn, Welcome to the Jungle, Indeed, APEC, Les Jeudis
+            </div>
+        </div>
+    </div>
+</body>
+</html>

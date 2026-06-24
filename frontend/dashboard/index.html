@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CV Rambo - Dashboard</title>
+    
+    <!-- PouchDB -->
+    <script src="https://cdn.jsdelivr.net/npm/pouchdb@8.0.1/dist/pouchdb.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/pouchdb-find@8.0.1/dist/pouchdb.find.min.js"></script>
+    
+    <!-- Alpine.js -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.3/dist/cdn.min.js"></script>
+    
+    <script src="../config.js"></script>
+    
+    <!-- Global Workflows -->
+    <script src="../global/workflows/initialiser-pouchdb/code/index.js"></script>
+    <script src="../global/workflows/sync-couchdb/code/index.js"></script>
+    
+    <!-- Dashboard Workflows -->
+    <script src="workflows/charger-cibles/code/index.js"></script>
+    
+    <style>
+        :root {
+            --rambo-red: #FF0000;
+            --camouflage-green: #2E8B57;
+            --gunmetal-gray: #2F4F4F;
+            --gold: #FFD700;
+            --text-white: #FFFFFF;
+            --status-new: #FFA500;
+            --status-processing: #3498db;
+            --status-ready: #2ecc71;
+            --status-applied: #95a5a6;
+            --status-error: #e74c3c;
+            --bg-dark: #1a1a1a;
+            --border-color: #333;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Courier New', monospace;
+            background: var(--gunmetal-gray);
+            color: var(--text-white);
+            min-height: 100vh;
+        }
+        
+        .layout {
+            display: flex;
+            min-height: 100vh;
+        }
+        
+        /* Sidebar */
+        .sidebar {
+            width: 220px;
+            background: var(--bg-dark);
+            border-right: 2px solid var(--rambo-red);
+            padding: 20px 0;
+        }
+        
+        .logo {
+            text-align: center;
+            padding: 0 20px 20px;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 20px;
+        }
+        
+        .logo h1 {
+            font-family: 'Impact', sans-serif;
+            color: var(--rambo-red);
+            font-size: 1.4rem;
+            text-shadow: 2px 2px 0 var(--gold);
+        }
+        
+        .nav-item {
+            display: block;
+            padding: 15px 20px;
+            color: var(--text-white);
+            text-decoration: none;
+            border-left: 3px solid transparent;
+            transition: all 0.3s;
+        }
+        
+        .nav-item:hover, .nav-item.active {
+            background: rgba(255, 0, 0, 0.1);
+            border-left-color: var(--rambo-red);
+        }
+        
+        .nav-item .icon { margin-right: 10px; }
+        
+        /* Main content */
+        .main {
+            flex: 1;
+            padding: 30px;
+            overflow-y: auto;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        
+        .header h2 {
+            font-family: 'Impact', sans-serif;
+            font-size: 2rem;
+            color: var(--gold);
+            text-transform: uppercase;
+        }
+        
+        .btn-primary {
+            background: var(--rambo-red);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            cursor: pointer;
+            text-transform: uppercase;
+            box-shadow: 4px 4px 0 var(--gold);
+            transition: transform 0.1s;
+        }
+        
+        .btn-primary:hover {
+            transform: translate(-2px, -2px);
+            box-shadow: 6px 6px 0 var(--gold);
+        }
+        
+        .btn-primary:active {
+            transform: translate(0, 0);
+            box-shadow: 2px 2px 0 var(--gold);
+        }
+        
+        /* Stats cards */
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: var(--bg-dark);
+            border: 1px solid var(--border-color);
+            padding: 20px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        
+        .stat-card:hover { transform: translateY(-2px); }
+        
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+        }
+        
+        .stat-card.new::before { background: var(--status-new); }
+        .stat-card.processing::before { background: var(--status-processing); }
+        .stat-card.ready::before { background: var(--status-ready); }
+        .stat-card.applied::before { background: var(--status-applied); }
+        .stat-card.error::before { background: var(--status-error); }
+        
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .stat-card.new .stat-value { color: var(--status-new); }
+        .stat-card.processing .stat-value { color: var(--status-processing); }
+        .stat-card.ready .stat-value { color: var(--status-ready); }
+        .stat-card.applied .stat-value { color: var(--status-applied); }
+        .stat-card.error .stat-value { color: var(--status-error); }
+        
+        .stat-label {
+            font-size: 0.8rem;
+            color: #888;
+            text-transform: uppercase;
+        }
+        
+        /* Filters */
+        .filters {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .filter-btn {
+            background: transparent;
+            border: 1px solid #555;
+            color: #888;
+            padding: 8px 16px;
+            cursor: pointer;
+            font-family: inherit;
+            transition: all 0.2s;
+        }
+        
+        .filter-btn.active, .filter-btn:hover {
+            border-color: var(--rambo-red);
+            color: var(--rambo-red);
+        }
+        
+        /* Loading state */
+        .loading-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 60px;
+            background: var(--bg-dark);
+            border: 1px solid var(--border-color);
+        }
+        
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid #333;
+            border-top-color: var(--rambo-red);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 15px;
+        }
+        
+        @keyframes spin { to { transform: rotate(360deg); } }
+        
+        /* Empty state */
+        .empty-state {
+            text-align: center;
+            padding: 60px;
+            background: var(--bg-dark);
+            border: 1px solid var(--border-color);
+        }
+        
+        .empty-state .icon { font-size: 4rem; margin-bottom: 20px; }
+        .empty-state h3 { color: var(--gold); margin-bottom: 10px; }
+        .empty-state p { color: #888; }
+        
+        /* Cibles list */
+        .cibles-list {
+            background: var(--bg-dark);
+            border: 1px solid var(--border-color);
+        }
+        
+        .cible-item {
+            display: flex;
+            align-items: center;
+            padding: 15px 20px;
+            border-bottom: 1px solid var(--border-color);
+            transition: background 0.2s;
+        }
+        
+        .cible-item:hover { background: rgba(255, 0, 0, 0.05); }
+        .cible-item:last-child { border-bottom: none; }
+        
+        .cible-status {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 15px;
+            flex-shrink: 0;
+        }
+        
+        .status-new { 
+            background: var(--status-new); 
+            animation: pulse 2s infinite; 
+        }
+        .status-processing { 
+            background: var(--status-processing); 
+            animation: pulse 1.5s infinite; 
+        }
+        .status-script-ready { 
+            background: var(--status-ready); 
+            box-shadow: 0 0 10px var(--status-ready); 
+        }
+        .status-applied { background: var(--status-applied); }
+        .status-error { background: var(--status-error); }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .cible-info { flex: 1; }
+        .cible-title { font-weight: bold; margin-bottom: 5px; }
+        .cible-meta { font-size: 0.85rem; color: #888; }
+        
+        .cible-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .btn-action {
+            background: transparent;
+            border: 1px solid currentColor;
+            padding: 8px 16px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+        }
+        
+        .btn-copy {
+            color: var(--status-ready);
+            border-color: var(--status-ready);
+        }
+        .btn-copy:hover {
+            background: var(--status-ready);
+            color: black;
+        }
+        
+        .btn-view {
+            color: var(--gold);
+            border-color: var(--gold);
+        }
+        .btn-view:hover {
+            background: var(--gold);
+            color: black;
+        }
+        
+        /* Sync indicator */
+        .sync-status {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--bg-dark);
+            border: 1px solid var(--border-color);
+            padding: 10px 15px;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            z-index: 1000;
+        }
+        
+        .sync-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+        
+        .sync-indicator.online { background: var(--status-ready); }
+        .sync-indicator.syncing { 
+            background: var(--status-processing); 
+            animation: pulse 1s infinite; 
+        }
+        .sync-indicator.offline { background: var(--status-error); }
+        
+        /* Error state */
+        .error-message {
+            background: rgba(231, 76, 60, 0.1);
+            border: 1px solid var(--status-error);
+            color: var(--status-error);
+            padding: 15px 20px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div 
+        class="layout"
+        x-data="{ 
+            ...pouchdbInitializer(), 
+            ...couchdbSync(),
+            ...dashboardLoader()
+        }"
+        x-init="
+            $data.init();                    // Init PouchDB
+            $data.init();                    // Init Sync (attend db:ready)
+        "
+        @db:ready="loadCibles()"
+        @sync:change.window="loadCibles()"
+    >
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo">
+                <h1>🔫 CV RAMBO</h1>
+            </div>
+            <nav>
+                <a href="#" class="nav-item active">
+                    <span class="icon">📊</span> Dashboard
+                </a>
+                <a href="../ajout-url/index.html" class="nav-item">
+                    <span class="icon">➕</span> Ajouter
+                </a>
+                <a href="../kanban/index.html" class="nav-item">
+                    <span class="icon">📋</span> Kanban
+                </a>
+                <a href="../mode-rafale/index.html" class="nav-item">
+                    <span class="icon">🚀</span> Rafale
+                </a>
+                <a href="../arsenal/index.html" class="nav-item">
+                    <span class="icon">⚔️</span> Arsenal
+                </a>
+                <a href="../settings/index.html" class="nav-item">
+                    <span class="icon">⚙️</span> Settings
+                </a>
+            </nav>
+        </aside>
+        
+        <!-- Main Content -->
+        <main class="main">
+            <div class="header">
+                <h2>🔫 QG Tactique</h2>
+                <button class="btn-primary" @click="window.location.href='../ajout-url/index.html'">
+                    ➕ Nouvelle Cible
+                </button>
+            </div>
+            
+            <!-- Error message -->
+            <template x-if="error">
+                <div class="error-message" x-text="error"></div>
+            </template>
+            
+            <!-- Stats Cards -->
+            <div class="stats" x-show="!loading && !error">
+                <div class="stat-card new" :class="{ active: currentFilter === 'new' }" @click="filterBy('new')">
+                    <div class="stat-value" x-text="stats.new || 0"></div>
+                    <div class="stat-label">En attente</div>
+                </div>
+                <div class="stat-card processing" :class="{ active: currentFilter === 'processing' }" @click="filterBy('processing')">
+                    <div class="stat-value" x-text="stats.processing || 0"></div>
+                    <div class="stat-label">En cours</div>
+                </div>
+                <div class="stat-card ready" :class="{ active: currentFilter === 'script-ready' }" @click="filterBy('script-ready')">
+                    <div class="stat-value" x-text="stats.ready || 0"></div>
+                    <div class="stat-label">Script prêt</div>
+                </div>
+                <div class="stat-card applied" :class="{ active: currentFilter === 'applied' }" @click="filterBy('applied')">
+                    <div class="stat-value" x-text="stats.applied || 0"></div>
+                    <div class="stat-label">Postulé</div>
+                </div>
+                <div class="stat-card error" :class="{ active: currentFilter === 'error' }" @click="filterBy('error')">
+                    <div class="stat-value" x-text="stats.error || 0"></div>
+                    <div class="stat-label">Erreur</div>
+                </div>
+            </div>
+            
+            <!-- Filters -->
+            <div class="filters" x-show="!loading && !error">
+                <button 
+                    class="filter-btn" 
+                    :class="{ active: currentFilter === null }"
+                    @click="filterBy(null)"
+                >
+                    Toutes
+                </button>
+                <button 
+                    class="filter-btn" 
+                    :class="{ active: currentFilter === 'new' }"
+                    @click="filterBy('new')"
+                >
+                    🟡 En attente
+                </button>
+                <button 
+                    class="filter-btn" 
+                    :class="{ active: currentFilter === 'processing' }"
+                    @click="filterBy('processing')"
+                >
+                    🔵 En cours
+                </button>
+                <button 
+                    class="filter-btn" 
+                    :class="{ active: currentFilter === 'script-ready' }"
+                    @click="filterBy('script-ready')"
+                >
+                    🟢 Script prêt
+                </button>
+                <button 
+                    class="filter-btn" 
+                    :class="{ active: currentFilter === 'applied' }"
+                    @click="filterBy('applied')"
+                >
+                    ✅ Postulé
+                </button>
+            </div>
+            
+            <!-- Loading State -->
+            <div class="loading-container" x-show="loading">
+                <div class="spinner"></div>
+                <p>Chargement des cibles...</p>
+            </div>
+            
+            <!-- Empty State -->
+            <div class="empty-state" x-show="!loading && !error && cibles.length === 0">
+                <div class="icon">🎯</div>
+                <h3>Aucune cible en vue</h3>
+                <p>Ajoutez votre première offre pour commencer la mission</p>
+            </div>
+            
+            <!-- Cibles List -->
+            <div class="cibles-list" x-show="!loading && !error && cibles.length > 0">
+                <template x-for="cible in filteredCibles" :key="cible._id">
+                    <div class="cible-item">
+                        <div class="cible-status" :class="'status-' + cible.status"></div>
+                        <div class="cible-info">
+                            <div class="cible-title" x-text="cible.title || 'Offre sans titre'"></div>
+                            <div class="cible-meta">
+                                <span x-text="cible.url ? new URL(cible.url).hostname : 'URL inconnue'"></span>
+                                <span x-show="cible.status === 'script-ready'"> • Script prêt</span>
+                                <span x-show="cible.status === 'processing'"> • Génération en cours...</span>
+                                <span x-show="cible.status === 'new'"> • En attente</span>
+                                <span x-show="cible.status === 'applied'"> • Postulé</span>
+                            </div>
+                        </div>
+                        <div class="cible-actions">
+                            <button 
+                                class="btn-action btn-copy" 
+                                x-show="cible.status === 'script-ready'"
+                                @click="copyScript(cible._id)"
+                            >
+                                📋 Copier
+                            </button>
+                            <button 
+                                class="btn-action btn-view"
+                                @click="viewCible(cible._id)"
+                            >
+                                🔍 Voir
+                            </button>
+                        </div>
+                    </div>
+                </template>
+            </div>
+        </main>
+        
+        <!-- Sync Status -->
+        <div class="sync-status">
+            <div class="sync-indicator" :class="status === 'active' ? 'online' : (status === 'connecting' ? 'syncing' : 'offline')"></div>
+            <span x-text="statusText"></span>
+        </div>
+    </div>
+</body>
+</html>

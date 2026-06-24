@@ -1,0 +1,13 @@
+{
+  "name": "cv-rambo-frontend",
+  "version": "1.0.0",
+  "description": "CV Rambo Frontend",
+  "scripts": {
+    "start": "npx serve . -l 8080",
+    "dev": "npx sirv . --port 8080 --dev"
+  },
+  "devDependencies": {
+    "serve": "^14.2.1",
+    "sirv-cli": "^2.0.2"
+  }
+}

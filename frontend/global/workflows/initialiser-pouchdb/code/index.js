@@ -1,114 +1,163 @@
 /**
- * Mega-fonction du workflow F-013-initialiser-pouchdb
- * Source: specs/spec.md
+ * Mega-fonction : initialiser-pouchdb
+ * Initialise PouchDB local, crée les indexes, expose utils globaux
  * Framework: Alpine.js (PAS de JS vanille)
- * Description: Initialiser les bases de données PouchDB au démarrage
+ * Source: specs/_app/frontend/global/workflows/initialiser-pouchdb/specs/spec.md
  */
 
 document.addEventListener('alpine:init', () => {
-  Alpine.store('databases', {
-    profil: null,
-    cibles: null,
-    tags: null,
-    settings: null,
-    'error-logs': null
-  });
-
-  Alpine.data('workflowInitialiserPouchdb', () => ({
-    dbInstances: {},
-    initialized: false,
+  Alpine.data('pouchdbInitializer', () => ({
+    db: null,
+    isReady: false,
+    error: null,
+    indexesCreated: false,
 
     async init() {
-      await this.initialiserPouchdb();
+      /**
+       * @action Initialiser PouchDB
+       * @checkpoint pouchdb-init-started
+       */
+      console.log('[CHECKPOINT]', 'pouchdb-init-started');
+      
+      try {
+        // Vérifier que PouchDB est disponible (CDN)
+        if (typeof PouchDB === 'undefined') {
+          throw new Error('PouchDB not loaded - check CDN');
+        }
+        
+        // Plugin find
+        if (PouchDB.plugin) {
+          PouchDB.plugin(PouchDBFind);
+        }
+
+        /**
+         * @action Créer instance PouchDB locale
+         * @checkpoint pouchdb-instance-created
+         */
+        const DB_NAME = 'cv-rambo';
+        this.db = new PouchDB(DB_NAME);
+        console.log('[CHECKPOINT]', 'pouchdb-instance-created', { dbName: DB_NAME });
+
+        /**
+         * @action Créer indexes pour requêtes
+         * @checkpoint indexes-created
+         */
+        await this.creerIndexes();
+        this.indexesCreated = true;
+        console.log('[CHECKPOINT]', 'indexes-created', { 
+          indexes: ['idx-type-status-date', 'idx-type-url'] 
+        });
+
+        /**
+         * @action Exposer utils globalement
+         * @checkpoint utils-exposed
+         */
+        this.exposeUtils();
+        console.log('[CHECKPOINT]', 'utils-exposed', { 
+          utils: ['getCibles', 'getCible', 'createCible', 'updateCible'] 
+        });
+
+        /**
+         * @action Émettre événement ready
+         * @checkpoint pouchdb-ready
+         */
+        this.isReady = true;
+        window.dispatchEvent(new CustomEvent('db:ready', { 
+          detail: { db: this.db, timestamp: Date.now() } 
+        }));
+        console.log('[CHECKPOINT]', 'pouchdb-ready', { timestamp: Date.now() });
+
+      } catch (err) {
+        this.error = err.message;
+        console.error('[CHECKPOINT]', 'pouchdb-init-error', { error: err.message });
+        window.dispatchEvent(new CustomEvent('db:error', { 
+          detail: { error: err, phase: 'init' } 
+        }));
+      }
     },
 
-    async initialiserPouchdb() {
-      try {
-        /**
-         * @action Vérifier si PouchDB est disponible
-         * @checkpoint pouchdb-available, la librairie PouchDB est chargée et accessible
-         */
-        if (typeof PouchDB === 'undefined') {
-          throw new Error('PouchDB library not loaded');
+    async creerIndexes() {
+      // Index pour requêtes par type + status + date
+      await this.db.createIndex({
+        index: {
+          fields: ['type', 'status', 'createdAt'],
+          name: 'idx-type-status-date'
         }
-        console.log('[CHECKPOINT]', 'pouchdb-available', { status: 'PouchDB library is loaded' });
+      });
 
-        /**
-         * @action Créer la base de données "profil"
-         * @checkpoint profil-db-created, new PouchDB('profil') retourne une instance valide
-         */
-        this.dbInstances.profil = new PouchDB('profil');
-        console.log('[CHECKPOINT]', 'profil-db-created', { dbName: 'profil', adapter: this.dbInstances.profil.adapter });
+      // Index pour recherche par URL
+      await this.db.createIndex({
+        index: {
+          fields: ['type', 'url'],
+          name: 'idx-type-url'
+        }
+      });
+    },
 
-        /**
-         * @action Créer la base de données "cibles"
-         * @checkpoint cibles-db-created, new PouchDB('cibles') retourne une instance valide
-         */
-        this.dbInstances.cibles = new PouchDB('cibles');
-        console.log('[CHECKPOINT]', 'cibles-db-created', { dbName: 'cibles', adapter: this.dbInstances.cibles.adapter });
+    exposeUtils() {
+      // Exposer db globalement
+      window.db = this.db;
 
-        /**
-         * @action Créer la base de données "tags"
-         * @checkpoint tags-db-created, new PouchDB('tags') retourne une instance valide
-         */
-        this.dbInstances.tags = new PouchDB('tags');
-        console.log('[CHECKPOINT]', 'tags-db-created', { dbName: 'tags', adapter: this.dbInstances.tags.adapter });
+      // Helpers de requête courants
+      window.dbUtils = {
+        db: this.db,
 
-        /**
-         * @action Créer la base de données "settings"
-         * @checkpoint settings-db-created, new PouchDB('settings') retourne une instance valide
-         */
-        this.dbInstances.settings = new PouchDB('settings');
-        console.log('[CHECKPOINT]', 'settings-db-created', { dbName: 'settings', adapter: this.dbInstances.settings.adapter });
+        async getCibles(filter = null) {
+          const selector = { type: 'cible' };
+          if (filter?.status) {
+            selector.status = filter.status;
+          }
+          const result = await this.db.find({
+            selector: selector,
+            sort: [{ createdAt: 'desc' }]
+          });
+          return result.docs;
+        },
 
-        /**
-         * @action Créer la base de données "error-logs"
-         * @checkpoint error-logs-db-created, new PouchDB('error-logs') retourne une instance valide
-         */
-        this.dbInstances['error-logs'] = new PouchDB('error-logs');
-        console.log('[CHECKPOINT]', 'error-logs-db-created', { dbName: 'error-logs', adapter: this.dbInstances['error-logs'].adapter });
+        async getCible(id) {
+          return await this.db.get(id);
+        },
 
-        /**
-         * @action Désactiver la synchronisation réseau par défaut
-         * @checkpoint sync-disabled, aucune replication/Sync n'est activée automatiquement
-         */
-        // Par défaut, PouchDB n'active pas la sync automatique
-        // On s'assure qu'aucune réplication n'est en cours
-        this.syncDisabled = true;
-        console.log('[CHECKPOINT]', 'sync-disabled', { autoSync: false, manualSync: true });
+        async createCible(url, data = {}) {
+          const doc = {
+            _id: `cible-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+            type: 'cible',
+            url: url,
+            status: 'new',
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+            ...data
+          };
+          const result = await this.db.put(doc);
+          return { ...doc, _rev: result.rev };
+        },
 
-        /**
-         * @action Stocker les instances dans le store global
-         * @checkpoint dbs-stored, store.databases contient les références aux 5 bases PouchDB
-         */
-        Alpine.store('databases', {
-          profil: this.dbInstances.profil,
-          cibles: this.dbInstances.cibles,
-          tags: this.dbInstances.tags,
-          settings: this.dbInstances.settings,
-          'error-logs': this.dbInstances['error-logs']
-        });
-        console.log('[CHECKPOINT]', 'dbs-stored', { 
-          databases: ['profil', 'cibles', 'tags', 'settings', 'error-logs'],
-          count: 5
-        });
+        async updateCible(id, updates) {
+          const doc = await this.db.get(id);
+          const updated = {
+            ...doc,
+            ...updates,
+            updatedAt: new Date().toISOString()
+          };
+          const result = await this.db.put(updated);
+          return { ...updated, _rev: result.rev };
+        },
 
-        /**
-         * @action Logger l'initialisation
-         * @checkpoint log-emitted, console affiche "[STORAGE] pouchdb-initialized"
-         */
-        console.log('[STORAGE] pouchdb-initialized', {
-          databases: Object.keys(this.dbInstances),
-          timestamp: new Date().toISOString()
-        });
-        console.log('[CHECKPOINT]', 'log-emitted', { message: '[STORAGE] pouchdb-initialized' });
+        async deleteCible(id) {
+          const doc = await this.db.get(id);
+          return await this.db.remove(doc);
+        },
 
-        this.initialized = true;
-
-      } catch (error) {
-        console.error('[ERROR]', error.message);
-        throw error;
-      }
+        // Suivre les changements
+        onChanges(callback, options = {}) {
+          return this.db.changes({
+            since: 'now',
+            live: true,
+            include_docs: true,
+            ...options
+          }).on('change', callback);
+        }
+      };
     }
   }));
 });

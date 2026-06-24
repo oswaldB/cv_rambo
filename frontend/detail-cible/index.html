@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CV Rambo - Détail Cible</title>
+    
+    <!-- PouchDB -->
+    <script src="https://cdn.jsdelivr.net/npm/pouchdb@8.0.1/dist/pouchdb.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/pouchdb-find@8.0.1/dist/pouchdb.find.min.js"></script>
+    
+    <!-- Alpine.js -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.3/dist/cdn.min.js"></script>
+    
+    <script src="../config.js"></script>
+    
+    <!-- Global Workflows -->
+    <script src="../global/workflows/initialiser-pouchdb/code/index.js"></script>
+    
+    <!-- Detail Workflows -->
+    <script src="workflows/charger-detail/code/index.js"></script>
+    
+    <style>
+        :root {
+            --rambo-red: #FF0000;
+            --camouflage-green: #2E8B57;
+            --gunmetal-gray: #2F4F4F;
+            --gold: #FFD700;
+            --text-white: #FFFFFF;
+            --status-new: #FFA500;
+            --status-processing: #3498db;
+            --status-ready: #2ecc71;
+            --status-applied: #95a5a6;
+            --status-error: #e74c3c;
+            --bg-dark: #1a1a1a;
+            --border-color: #333;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Courier New', monospace;
+            background: var(--gunmetal-gray);
+            color: var(--text-white);
+            min-height: 100vh;
+        }
+        
+        .layout {
+            display: flex;
+            min-height: 100vh;
+        }
+        
+        .sidebar {
+            width: 220px;
+            background: var(--bg-dark);
+            border-right: 2px solid var(--rambo-red);
+            padding: 20px 0;
+        }
+        
+        .logo {
+            text-align: center;
+            padding: 0 20px 20px;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 20px;
+        }
+        
+        .logo h1 {
+            font-family: 'Impact', sans-serif;
+            color: var(--rambo-red);
+            font-size: 1.4rem;
+            text-shadow: 2px 2px 0 var(--gold);
+        }
+        
+        .nav-item {
+            display: block;
+            padding: 15px 20px;
+            color: var(--text-white);
+            text-decoration: none;
+            border-left: 3px solid transparent;
+            transition: all 0.3s;
+        }
+        
+        .nav-item:hover, .nav-item.active {
+            background: rgba(255, 0, 0, 0.1);
+            border-left-color: var(--rambo-red);
+        }
+        
+        .nav-item .icon { margin-right: 10px; }
+        
+        .main {
+            flex: 1;
+            padding: 30px;
+            overflow-y: auto;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .header h2 {
+            font-family: 'Impact', sans-serif;
+            font-size: 1.5rem;
+            color: var(--gold);
+            text-transform: uppercase;
+        }
+        
+        .btn-back {
+            background: transparent;
+            border: 2px solid var(--gold);
+            color: var(--gold);
+            padding: 8px 16px;
+            font-family: inherit;
+            cursor: pointer;
+            text-transform: uppercase;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 5px 12px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        
+        .status-new { background: var(--status-new); color: black; }
+        .status-processing { background: var(--status-processing); }
+        .status-script-ready { background: var(--status-ready); color: black; }
+        .status-applied { background: var(--status-applied); }
+        .status-error { background: var(--status-error); }
+        
+        /* Content Grid */
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+        
+        @media (max-width: 900px) {
+            .content-grid { grid-template-columns: 1fr; }
+        }
+        
+        /* Panels */
+        .panel {
+            background: var(--bg-dark);
+            border: 1px solid var(--border-color);
+            padding: 25px;
+        }
+        
+        .panel-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .panel-header h3 {
+            font-family: 'Impact', sans-serif;
+            color: var(--gold);
+            text-transform: uppercase;
+        }
+        
+        /* Info Section */
+        .info-row {
+            display: flex;
+            margin-bottom: 15px;
+        }
+        
+        .info-label {
+            width: 120px;
+            color: #888;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+        }
+        
+        .info-value {
+            flex: 1;
+            word-break: break-word;
+        }
+        
+        .info-value a {
+            color: var(--status-processing);
+            text-decoration: none;
+        }
+        
+        .info-value a:hover {
+            text-decoration: underline;
+        }
+        
+        /* Script Section */
+        .script-container {
+            background: #0a0a0a;
+            border: 1px solid var(--border-color);
+            padding: 20px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9rem;
+            white-space: pre-wrap;
+            word-break: break-word;
+            max-height: 400px;
+            overflow-y: auto;
+            color: #ccc;
+            margin-bottom: 20px;
+        }
+        
+        .script-container.loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 200px;
+        }
+        
+        .script-container.empty {
+            color: #666;
+            font-style: italic;
+        }
+        
+        /* Actions */
+        .actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .btn-primary {
+            background: var(--rambo-red);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-family: inherit;
+            font-weight: bold;
+            cursor: pointer;
+            text-transform: uppercase;
+            box-shadow: 4px 4px 0 var(--gold);
+            transition: transform 0.1s;
+        }
+        
+        .btn-primary:hover:not(:disabled) {
+            transform: translate(-2px, -2px);
+            box-shadow: 6px 6px 0 var(--gold);
+        }
+        
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+        
+        .btn-secondary {
+            background: transparent;
+            border: 2px solid var(--camouflage-green);
+            color: var(--camouflage-green);
+            padding: 12px 24px;
+            font-family: inherit;
+            font-weight: bold;
+            cursor: pointer;
+            text-transform: uppercase;
+        }
+        
+        .btn-secondary:hover {
+            background: var(--camouflage-green);
+            color: black;
+        }
+        
+        .btn-link {
+            background: transparent;
+            border: 2px solid var(--status-processing);
+            color: var(--status-processing);
+            padding: 12px 24px;
+            font-family: inherit;
+            font-weight: bold;
+            cursor: pointer;
+            text-transform: uppercase;
+        }
+        
+        /* Loading State */
+        .loading-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 60px;
+            background: var(--bg-dark);
+            border: 1px solid var(--border-color);
+            text-align: center;
+        }
+        
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid #333;
+            border-top-color: var(--rambo-red);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+        
+        @keyframes spin { to { transform: rotate(360deg); } }
+        
+        /* Error State */
+        .error-container {
+            text-align: center;
+            padding: 60px;
+            background: var(--bg-dark);
+            border: 1px solid var(--status-error);
+        }
+        
+        .error-container h3 {
+            color: var(--status-error);
+            margin-bottom: 15px;
+        }
+        
+        /* Processing State */
+        .processing-info {
+            background: rgba(52, 152, 219, 0.1);
+            border-left: 4px solid var(--status-processing);
+            padding: 15px 20px;
+            margin-bottom: 20px;
+        }
+        
+        .processing-info p {
+            color: var(--status-processing);
+        }
+        
+        .progress-bar {
+            height: 4px;
+            background: #333;
+            margin-top: 10px;
+            overflow: hidden;
+        }
+        
+        .progress-bar .fill {
+            height: 100%;
+            background: var(--status-processing);
+            animation: progress 2s ease-in-out infinite;
+        }
+        
+        @keyframes progress {
+            0% { width: 0%; margin-left: 0%; }
+            50% { width: 30%; margin-left: 70%; }
+            100% { width: 0%; margin-left: 100%; }
+        }
+    </style>
+</head>
+<body>
+    <div 
+        class="layout"
+        x-data="{ 
+            ...pouchdbInitializer(), 
+            ...detailLoader() 
+        }"
+        x-init="$data.init(); initDetail()"
+    >
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo">
+                <h1>🔫 CV RAMBO</h1>
+            </div>
+            <nav>
+                <a href="../dashboard/index.html" class="nav-item">
+                    <span class="icon">📊</span> Dashboard
+                </a>
+                <a href="../ajout-url/index.html" class="nav-item">
+                    <span class="icon">➕</span> Ajouter
+                </a>
+                <a href="../kanban/index.html" class="nav-item">
+                    <span class="icon">📋</span> Kanban
+                </a>
+                <a href="../mode-rafale/index.html" class="nav-item">
+                    <span class="icon">🚀</span> Rafale
+                </a>
+                <a href="../arsenal/index.html" class="nav-item">
+                    <span class="icon">⚔️</span> Arsenal
+                </a>
+                <a href="../settings/index.html" class="nav-item">
+                    <span class="icon">⚙️</span> Settings
+                </a>
+            </nav>
+        </aside>
+        
+        <!-- Main Content -->
+        <main class="main">
+            <!-- Loading -->
+            <div class="loading-container" x-show="loading">
+                <div class="spinner"></div>
+                <p>Chargement de la cible...</p>
+            </div>
+            
+            <!-- Error -->
+            <div class="error-container" x-show="error && !loading">
+                <h3>💥 Erreur</h3>
+                <p x-text="error"></p>
+                <button class="btn-primary" @click="goBack()" style="margin-top: 20px;">
+                    ← Retour
+                </button>
+            </div>
+            
+            <!-- Content -->
+            <div x-show="!loading && !error && cible">
+                <div class="header">
+                    <div class="header-left">
+                        <button class="btn-back" @click="goBack()">← Retour</button>
+                        <h2 x-text="cible?.title || 'Détail de la cible'"></h2>
+                    </div>
+                    <span class="status-badge" :class="'status-' + cible?.status" x-text="statusLabel"></span>
+                </div>
+                
+                <div class="content-grid">
+                    <!-- Left: Info Panel -->
+                    <div class="panel">
+                        <div class="panel-header">
+                            <span>ℹ️</span>
+                            <h3>Informations</h3>
+                        </div>
+                        
+                        <div class="info-row">
+                            <div class="info-label">URL</div>
+                            <div class="info-value">
+                                <a :href="cible?.url" target="_blank" x-text="cible?.url ? new URL(cible.url).hostname : 'N/A'"></a>
+                            </div>
+                        </div>
+                        
+                        <div class="info-row">
+                            <div class="info-label">Site</div>
+                            <div class="info-value" x-text="cible?.siteType || 'Générique'"></div>
+                        </div>
+                        
+                        <div class="info-row">
+                            <div class="info-label">Ajouté le</div>
+                            <div class="info-value" x-text="formatDate(cible?.createdAt)"></div>
+                        </div>
+                        
+                        <div class="info-row" x-show="cible?.updatedAt !== cible?.createdAt">
+                            <div class="info-label">Mis à jour</div>
+                            <div class="info-value" x-text="formatDate(cible?.updatedAt)"></div>
+                        </div>
+                        
+                        <div class="info-row" x-show="cible?.appliedAt">
+                            <div class="info-label">Postulé le</div>
+                            <div class="info-value" x-text="formatDate(cible?.appliedAt)"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- Right: Script Panel -->
+                    <div class="panel">
+                        <div class="panel-header">
+                            <span>📝</span>
+                            <h3>Script de candidature</h3>
+                        </div>
+                        
+                        <!-- Processing State -->
+                        <div class="processing-info" x-show="cible?.status === 'processing'">
+                            <p>⏳ Génération du script en cours... (10-40 secondes)</p>
+                            <div class="progress-bar"><div class="fill"></div></div>
+                        </div>
+                        
+                        <!-- New State -->
+                        <div class="script-container empty" x-show="cible?.status === 'new'">
+                            En attente de traitement. Le script sera généré automatiquement.
+                        </div>
+                        
+                        <!-- Script Ready -->
+                        <template x-if="cible?.status === 'script-ready' || cible?.status === 'applied'">
+                            <div>
+                                <div class="script-container" x-text="cible?.generatedScript || '// Script non disponible'"></div>
+                                
+                                <div class="actions">
+                                    <button class="btn-primary" @click="copyScript()">
+                                        📋 Copier le script
+                                    </button>
+                                    <a :href="cible?.url" target="_blank" class="btn-link" style="text-decoration: none; display: inline-block;">
+                                        🔗 Ouvrir l'offre
+                                    </a>
+                                </div>
+                                
+                                <div class="actions" style="margin-top: 15px;" x-show="cible?.status !== 'applied'">
+                                    <button class="btn-secondary" @click="markAsApplied()">
+                                        ✅ Marquer comme postulé
+                                    </button>
+                                </div>
+                            </div>
+                        </template>
+                        
+                        <!-- Error State -->
+                        <div class="error-container" x-show="cible?.status === 'error'" style="padding: 30px;">
+                            <h3>💥 Erreur de génération</h3>
+                            <p x-text="cible?.errorMessage || 'Une erreur est survenue lors de la génération du script.'"></p>
+                            <button class="btn-primary" @click="retryGeneration()" style="margin-top: 15px;">
+                                🔄 Réessayer
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

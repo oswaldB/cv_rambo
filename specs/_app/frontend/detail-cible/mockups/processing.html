@@ -1,0 +1,142 @@
+<!-- _app/frontend/detail-cible/mockups/processing.html -->
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CV Rambo - Génération en cours</title>
+    <style>
+        :root {
+            --rambo-red: #FF0000;
+            --camouflage-green: #2E8B57;
+            --gunmetal-gray: #2F4F4F;
+            --gold: #FFD700;
+            --status-processing: #3498db;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Courier New', monospace;
+            background: var(--gunmetal-gray);
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .container {
+            text-align: center;
+            padding: 40px;
+        }
+        .spinner {
+            width: 80px;
+            height: 80px;
+            border: 4px solid #333;
+            border-top-color: var(--status-processing);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 30px;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        h2 {
+            font-family: 'Impact', sans-serif;
+            color: var(--gold);
+            margin-bottom: 15px;
+        }
+        .subtitle {
+            color: #888;
+            margin-bottom: 30px;
+        }
+        .progress-bar {
+            width: 300px;
+            height: 8px;
+            background: #333;
+            margin: 30px auto;
+            position: relative;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            background: var(--status-processing);
+            width: 60%;
+            animation: progress 2s ease-in-out infinite;
+        }
+        @keyframes progress {
+            0% { width: 0%; }
+            50% { width: 60%; }
+            100% { width: 90%; }
+        }
+        .steps {
+            text-align: left;
+            max-width: 400px;
+            margin: 30px auto;
+        }
+        .step-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 10px;
+            color: #666;
+        }
+        .step-item.active {
+            color: var(--status-processing);
+        }
+        .step-item.done {
+            color: var(--camouflage-green);
+        }
+        .step-icon {
+            width: 24px;
+            text-align: center;
+        }
+        .cancel-btn {
+            background: transparent;
+            border: 1px solid #555;
+            color: #888;
+            padding: 10px 20px;
+            margin-top: 30px;
+            cursor: pointer;
+            font-family: inherit;
+        }
+        .cancel-btn:hover {
+            border-color: var(--rambo-red);
+            color: var(--rambo-red);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="spinner"></div>
+        
+        <h2>🔧 GÉNÉRATION EN COURS</h2>
+        <p class="subtitle">Notre IA analyse l'offre et prépare votre script...</p>
+        
+        <div class="progress-bar">
+            <div class="progress-fill"></div>
+        </div>
+        
+        <p>⏱ Temps estimé : 20-30 secondes</p>
+        
+        <div class="steps">
+            <div class="step-item done">
+                <span class="step-icon">✅</span>
+                <span>URL reçue</span>
+            </div>
+            <div class="step-item active">
+                <span class="step-icon">🔄</span>
+                <span>Analyse de la page...</span>
+            </div>
+            <div class="step-item">
+                <span class="step-icon">⏳</span>
+                <span>Génération du script</span>
+            </div>
+            <div class="step-item">
+                <span class="step-icon">⏳</span>
+                <span>Prêt à utiliser !</span>
+            </div>
+        </div>
+        
+        <button class="cancel-btn">Annuler</button>
+    </div>
+</body>
+</html>

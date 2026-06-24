@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CV Rambo - Ajouter une cible</title>
+    
+    <!-- PouchDB -->
+    <script src="https://cdn.jsdelivr.net/npm/pouchdb@8.0.1/dist/pouchdb.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/pouchdb-find@8.0.1/dist/pouchdb.find.min.js"></script>
+    
+    <!-- Alpine.js -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.3/dist/cdn.min.js"></script>
+    
+    <script src="../config.js"></script>
+    
+    <!-- Global Workflows -->
+    <script src="../global/workflows/initialiser-pouchdb/code/index.js"></script>
+    
+    <!-- Ajout URL Workflows -->
+    <script src="workflows/creer-cible/code/index.js"></script>
+    
+    <style>
+        :root {
+            --rambo-red: #FF0000;
+            --camouflage-green: #2E8B57;
+            --gunmetal-gray: #2F4F4F;
+            --gold: #FFD700;
+            --text-white: #FFFFFF;
+            --status-new: #FFA500;
+            --bg-dark: #1a1a1a;
+            --border-color: #333;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Courier New', monospace;
+            background: var(--gunmetal-gray);
+            color: var(--text-white);
+            min-height: 100vh;
+        }
+        
+        .layout {
+            display: flex;
+            min-height: 100vh;
+        }
+        
+        .sidebar {
+            width: 220px;
+            background: var(--bg-dark);
+            border-right: 2px solid var(--rambo-red);
+            padding: 20px 0;
+        }
+        
+        .logo {
+            text-align: center;
+            padding: 0 20px 20px;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 20px;
+        }
+        
+        .logo h1 {
+            font-family: 'Impact', sans-serif;
+            color: var(--rambo-red);
+            font-size: 1.4rem;
+            text-shadow: 2px 2px 0 var(--gold);
+        }
+        
+        .nav-item {
+            display: block;
+            padding: 15px 20px;
+            color: var(--text-white);
+            text-decoration: none;
+            border-left: 3px solid transparent;
+            transition: all 0.3s;
+        }
+        
+        .nav-item:hover, .nav-item.active {
+            background: rgba(255, 0, 0, 0.1);
+            border-left-color: var(--rambo-red);
+        }
+        
+        .nav-item .icon { margin-right: 10px; }
+        
+        .main {
+            flex: 1;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .form-container {
+            background: var(--bg-dark);
+            border: 2px solid var(--border-color);
+            padding: 40px;
+            width: 100%;
+            max-width: 600px;
+        }
+        
+        .form-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .form-header h2 {
+            font-family: 'Impact', sans-serif;
+            font-size: 1.8rem;
+            color: var(--gold);
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+        
+        .form-header p {
+            color: #888;
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 15px;
+            background: var(--gunmetal-gray);
+            border: 2px solid var(--border-color);
+            color: var(--text-white);
+            font-family: 'Courier New', monospace;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--rambo-red);
+        }
+        
+        .form-group input.error {
+            border-color: var(--rambo-red);
+        }
+        
+        .form-group input.valid {
+            border-color: var(--camouflage-green);
+        }
+        
+        .validation-msg {
+            font-size: 0.85rem;
+            margin-top: 5px;
+            min-height: 20px;
+        }
+        
+        .validation-msg.error {
+            color: var(--rambo-red);
+        }
+        
+        .validation-msg.valid {
+            color: var(--camouflage-green);
+        }
+        
+        .site-detected {
+            display: inline-block;
+            background: rgba(255, 215, 0, 0.1);
+            color: var(--gold);
+            padding: 5px 10px;
+            font-size: 0.8rem;
+            margin-top: 8px;
+        }
+        
+        .btn-primary {
+            width: 100%;
+            background: var(--rambo-red);
+            color: white;
+            border: none;
+            padding: 15px;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            font-size: 1.1rem;
+            cursor: pointer;
+            text-transform: uppercase;
+            box-shadow: 4px 4px 0 var(--gold);
+            transition: transform 0.1s;
+        }
+        
+        .btn-primary:hover:not(:disabled) {
+            transform: translate(-2px, -2px);
+            box-shadow: 6px 6px 0 var(--gold);
+        }
+        
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .btn-primary:active:not(:disabled) {
+            transform: translate(0, 0);
+            box-shadow: 2px 2px 0 var(--gold);
+        }
+        
+        .btn-secondary {
+            width: 100%;
+            background: transparent;
+            color: var(--gold);
+            border: 2px solid var(--gold);
+            padding: 12px;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            cursor: pointer;
+            text-transform: uppercase;
+            margin-top: 15px;
+        }
+        
+        /* Loading state */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid #333;
+            border-top-color: var(--rambo-red);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+        
+        @keyframes spin { to { transform: rotate(360deg); } }
+        
+        /* Success state */
+        .success-container {
+            text-align: center;
+            padding: 40px;
+        }
+        
+        .success-icon {
+            font-size: 5rem;
+            margin-bottom: 20px;
+        }
+        
+        .success-container h3 {
+            font-family: 'Impact', sans-serif;
+            font-size: 1.5rem;
+            color: var(--camouflage-green);
+            margin-bottom: 15px;
+        }
+        
+        .success-container p {
+            color: #888;
+            margin-bottom: 30px;
+        }
+        
+        .btn-group {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .btn-group .btn-primary,
+        .btn-group .btn-secondary {
+            flex: 1;
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+    <div 
+        class="layout"
+        x-data="{ 
+            ...pouchdbInitializer(), 
+            ...cibleCreator() 
+        }"
+        x-init="$data.init()"
+    >
+        
+003e
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo">
+                <h1>🔫 CV RAMBO</h1>
+            </div>
+            <nav>
+                <a href="../dashboard/index.html" class="nav-item">
+                    <span class="icon">📊</span> Dashboard
+                </a>
+                <a href="#" class="nav-item active">
+                    <span class="icon">➕</span> Ajouter
+                </a>
+                <a href="../kanban/index.html" class="nav-item">
+                    <span class="icon">📋</span> Kanban
+                </a>
+                <a href="../mode-rafale/index.html" class="nav-item">
+                    <span class="icon">🚀</span> Rafale
+                </a>
+                <a href="../arsenal/index.html" class="nav-item">
+                    <span class="icon">⚔️</span> Arsenal
+                </a>
+                <a href="../settings/index.html" class="nav-item">
+                    <span class="icon">⚙️</span> Settings
+                </a>
+            </nav>
+        </aside>
+        
+        <!-- Main Content -->
+        <main class="main">
+            <!-- Form -->
+            <div class="form-container" x-show="!success && !error">
+                <div class="form-header">
+                    <h2>🎯 Nouvelle Cible</h2>
+                    <p>Collez l'URL de l'offre d'emploi</p>
+                </div>
+                
+                <form @submit.prevent="submit()">
+                    <div class="form-group">
+                        <label for="url">URL de l'offre</label>
+                        <input 
+                            type="url" 
+                            id="url" 
+                            x-model="url"
+                            @input="validateUrl()"
+                            placeholder="https://linkedin.com/jobs/view/..."
+                            :class="{ error: validationError, valid: isValid && !validationError }"
+                        >
+                        <div class="validation-msg" :class="{ error: validationError, valid: isValid && !validationError }">
+                            <span x-text="validationMsg"></span>
+                        </div>
+                        <div x-show="siteType" class="site-detected">
+                            🌐 Détecté: <span x-text="siteType"></span>
+                        </div>
+                    </div>
+                    
+                    <button 
+                        type="submit" 
+                        class="btn-primary"
+                        :disabled="!isValid || isSubmitting"
+                    >
+                        <span x-show="!isSubmitting">🔫 VERROUILLER LA CIBLE</span>
+                        <span x-show="isSubmitting">⏳ Ajout en cours...</span>
+                    </button>
+                </form>
+            </div>
+            
+            <!-- Loading -->
+            <div class="loading-overlay" x-show="isSubmitting">
+                <div class="spinner"></div>
+                <p>Enregistrement de la cible...</p>
+            </div>
+            
+            <!-- Success -->
+            <div class="form-container" x-show="success">
+                <div class="success-container">
+                    <div class="success-icon">🎯</div>
+                    <h3>Cible verrouillée !</h3>
+                    <p x-text="successMessage"></p>
+                    
+                    <div class="btn-group">
+                        <button class="btn-primary" @click="reset()">➕ Ajouter une autre</button>
+                        <button class="btn-secondary" @click="goToDashboard()">📊 Voir le dashboard</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Error -->
+            <div class="form-container" x-show="error && !isSubmitting">
+                <div class="success-container">
+                    <div class="success-icon">💥</div>
+                    <h3 style="color: var(--rambo-red)">Erreur</h3>
+                    <p x-text="error"></p>
+                    <button class="btn-primary" @click="reset()">🔄 Réessayer</button>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

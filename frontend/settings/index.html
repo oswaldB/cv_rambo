@@ -1,30 +1,394 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <title>CV Rambo - Settings</title>
-  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-  <script src="workflows/charger-settings/code/index.js"></script>
-  <script src="workflows/sauver-setting/code/index.js"></script>
-  <script src="workflows/valider-cle-api/code/index.js"></script>
-  <script src="workflows/exporter-donnees/code/index.js"></script>
-  <script src="workflows/importer-donnees/code/index.js"></script>
-  <style>*{margin:0;padding:0;box-sizing:border-box}body{font-family:'Roboto Condensed',sans-serif;background:linear-gradient(135deg,#2F4F4F,#0a0a0a);min-height:100vh;color:#f5f5f5;padding:40px}</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CV Rambo - Settings</title>
+    
+    <script src="https://cdn.jsdelivr.net/npm/pouchdb@8.0.1/dist/pouchdb.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/pouchdb-find@8.0.1/dist/pouchdb.find.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.3/dist/cdn.min.js"></script>
+    
+    <script src="../config.js"></script>
+    
+    <script src="../global/workflows/initialiser-pouchdb/code/index.js"></script>
+    <script src="workflows/tester-connexion/code/index.js"></script>
+    <script src="workflows/forcer-sync/code/index.js"></script>
+    <script src="workflows/exporter-donnees/code/index.js"></script>
+    
+    <style>
+        :root {
+            --rambo-red: #FF0000;
+            --camouflage-green: #2E8B57;
+            --gunmetal-gray: #2F4F4F;
+            --gold: #FFD700;
+            --text-white: #FFFFFF;
+            --bg-dark: #1a1a1a;
+            --border-color: #333;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Courier New', monospace;
+            background: var(--gunmetal-gray);
+            color: var(--text-white);
+            min-height: 100vh;
+        }
+        
+        .layout { display: flex; min-height: 100vh; }
+        
+        .sidebar {
+            width: 220px;
+            background: var(--bg-dark);
+            border-right: 2px solid var(--rambo-red);
+            padding: 20px 0;
+            flex-shrink: 0;
+        }
+        
+        .logo {
+            text-align: center;
+            padding: 0 20px 20px;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 20px;
+        }
+        
+        .logo h1 {
+            font-family: 'Impact', sans-serif;
+            color: var(--rambo-red);
+            font-size: 1.4rem;
+            text-shadow: 2px 2px 0 var(--gold);
+        }
+        
+        .nav-item {
+            display: block;
+            padding: 15px 20px;
+            color: var(--text-white);
+            text-decoration: none;
+            border-left: 3px solid transparent;
+            transition: all 0.3s;
+        }
+        
+        .nav-item:hover, .nav-item.active {
+            background: rgba(255, 0, 0, 0.1);
+            border-left-color: var(--rambo-red);
+        }
+        
+        .nav-item .icon { margin-right: 10px; }
+        
+        .main {
+            flex: 1;
+            padding: 30px;
+            overflow-y: auto;
+        }
+        
+        .header {
+            margin-bottom: 30px;
+        }
+        
+        .header h2 {
+            font-family: 'Impact', sans-serif;
+            font-size: 1.8rem;
+            color: var(--gold);
+            text-transform: uppercase;
+        }
+        
+        .settings-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 25px;
+        }
+        
+        .settings-card {
+            background: var(--bg-dark);
+            border: 1px solid var(--border-color);
+            padding: 25px;
+        }
+        
+        .card-title {
+            font-family: 'Impact', sans-serif;
+            color: var(--gold);
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            color: #888;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            background: var(--gunmetal-gray);
+            border: 2px solid var(--border-color);
+            color: var(--text-white);
+            font-family: inherit;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--rambo-red);
+        }
+        
+        .btn {
+            padding: 12px 20px;
+            font-family: inherit;
+            font-weight: bold;
+            cursor: pointer;
+            text-transform: uppercase;
+            border: none;
+        }
+        
+        .btn-primary {
+            background: var(--rambo-red);
+            color: white;
+            box-shadow: 3px 3px 0 var(--gold);
+        }
+        
+        .btn-secondary {
+            background: transparent;
+            border: 2px solid var(--camouflage-green);
+            color: var(--camouflage-green);
+        }
+        
+        .btn-secondary:hover {
+            background: var(--camouflage-green);
+            color: black;
+        }
+        
+        .connection-status {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 15px;
+            background: var(--gunmetal-gray);
+            margin-bottom: 15px;
+        }
+        
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+        
+        .status-dot.online { background: var(--camouflage-green); }
+        .status-dot.offline { background: var(--rambo-red); }
+        .status-dot.testing { background: var(--gold); animation: pulse 1s infinite; }
+        
+        @keyframes pulse { 50% { opacity: 0.5; } }
+        
+        .status-text { font-weight: bold; }
+        
+        .sync-info {
+            margin-top: 15px;
+            padding: 15px;
+            background: var(--gunmetal-gray);
+            font-size: 0.9rem;
+        }
+        
+        .sync-info p { margin-bottom: 5px; }
+        
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .danger-zone {
+            border-color: var(--rambo-red);
+        }
+        
+        .danger-zone .card-title {
+            color: var(--rambo-red);
+        }
+        
+        .btn-danger {
+            background: transparent;
+            border: 2px solid var(--rambo-red);
+            color: var(--rambo-red);
+        }
+        
+        .btn-danger:hover {
+            background: var(--rambo-red);
+            color: white;
+        }
+        
+        .success-msg {
+            background: rgba(46, 204, 113, 0.1);
+            border-left: 4px solid var(--camouflage-green);
+            padding: 15px;
+            margin-bottom: 15px;
+            color: var(--camouflage-green);
+        }
+        
+        .error-msg {
+            background: rgba(231, 76, 60, 0.1);
+            border-left: 4px solid var(--rambo-red);
+            padding: 15px;
+            margin-bottom: 15px;
+            color: var(--rambo-red);
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+        
+        .stat-item {
+            background: var(--gunmetal-gray);
+            padding: 15px;
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--gold);
+        }
+        
+        .stat-label {
+            font-size: 0.8rem;
+            color: #888;
+            text-transform: uppercase;
+        }
+    </style>
 </head>
-<body x-data="{...workflowChargerSettings(),...workflowSauverSetting(),...workflowValiderCleApi(),...workflowExporterDonnees(),...workflowImporterDonnees()}">
-  <div style="max-width:800px;margin:0 auto">
-    <h1 style="font-family:'Bebas Neue',sans-serif;font-size:48px;color:#FFD700;text-align:center;letter-spacing:4px">⚙️ PARAMÈTRES</h1>
-    <div style="background:rgba(0,0,0,0.4);border:2px solid #FFD700;padding:30px;margin-top:30px">
-      <div style="margin-bottom:20px">
-        <label style="color:#FFD700;font-family:'Bebas Neue'">CLÉ API OLLAMA</label>
-        <input type="text" x-ref="apiKey" style="width:100%;padding:12px;background:#1a1a1a;border:2px solid #FFD700;color:#f5f5f5;margin-top:8px">
-        <button @click="validerCleApi($refs.apiKey.value)" style="margin-top:10px;padding:10px 20px;background:#2E8B57;border:2px solid #FFD700;color:white;font-family:'Bebas Neue';cursor:pointer">VALIDER</button>
-      </div>
-      <div style="display:flex;gap:15px;margin-top:30px">
-        <button @click="exporterDonnees()" style="flex:1;padding:15px;background:transparent;border:2px solid #FFD700;color:#FFD700;font-family:'Bebas Neue';cursor:pointer">EXPORTER DONNÉES</button>
-        <button @click="importerDonnees([])" style="flex:1;padding:15px;background:transparent;border:2px solid #FFD700;color:#FFD700;font-family:'Bebas Neue';cursor:pointer">IMPORTER DONNÉES</button>
-      </div>
+<body>
+    <div class="layout" x-data="{ ...pouchdbInitializer(), ...connectionTester(), ...syncForcer(), ...dataExporter() }" x-init="$data.init(); initSettings()">
+        
+        <aside class="sidebar">
+            <div class="logo">
+                <h1>🔫 CV RAMBO</h1>
+            </div>
+            <nav>
+                <a href="../dashboard/index.html" class="nav-item">
+                    <span class="icon">📊</span> Dashboard
+                </a>
+                <a href="../ajout-url/index.html" class="nav-item">
+                    <span class="icon">➕</span> Ajouter
+                </a>
+                <a href="../kanban/index.html" class="nav-item">
+                    <span class="icon">📋</span> Kanban
+                </a>
+                <a href="../mode-rafale/index.html" class="nav-item">
+                    <span class="icon">🚀</span> Rafale
+                </a>
+                <a href="../arsenal/index.html" class="nav-item">
+                    <span class="icon">⚔️</span> Arsenal
+                </a>
+                <a href="#" class="nav-item active">
+                    <span class="icon">⚙️</span> Settings
+                </a>
+            </nav>
+        </aside>
+        
+        <main class="main">
+            <div class="header">
+                <h2>⚙️ Configuration</h2>
+            </div>
+            
+            <div class="settings-grid">
+                
+                <!-- Connexion CouchDB -->
+                <div class="settings-card">
+                    <div class="card-title">🌐 Connexion CouchDB</div>
+                    
+                    <div class="connection-status">
+                        <div class="status-dot" :class="connectionStatus"></div>
+                        <span class="status-text" x-text="connectionStatusText"></span>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>URL CouchDB</label>
+                        <input type="url" x-model="couchConfig.url" placeholder="http://localhost:5984">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Nom d'utilisateur</label>
+                        <input type="text" x-model="couchConfig.username" placeholder="admin">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Mot de passe</label>
+                        <input type="password" x-model="couchConfig.password" placeholder="••••••">
+                    </div>
+                    
+                    <button class="btn btn-secondary" @click="testConnection()" :disabled="testing">
+                        <span x-show="!testing">🔄 Tester la connexion</span>
+                        <span x-show="testing">⏳ Test en cours...</span>
+                    </button>
+                </div>
+                
+                <!-- Synchronisation -->
+                <div class="settings-card">
+                    <div class="card-title">🔄 Synchronisation</div>
+                    
+                    <div class="sync-info">
+                        <p><strong>Status:</strong> <span x-text="syncStatus"></span></p>
+                        <p><strong>Dernier sync:</strong> <span x-text="lastSync || 'Jamais'"></span></p>
+                    </div>
+                    
+                    <div class="action-buttons">
+                        <button class="btn btn-primary" @click="forceSync()" :disabled="syncing">
+                            <span x-show="!syncing">🔄 Forcer sync maintenant</span>
+                            <span x-show="syncing">⏳ Sync en cours...</span>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Export de données -->
+                <div class="settings-card">
+                    <div class="card-title">💾 Export de données</div>
+                    
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <div class="stat-value" x-text="stats.cibles || 0"></div>
+                            <div class="stat-label">Cibles</div>
+                        </div>
+                        
+                        <div class="stat-item">
+                            <div class="stat-value" x-text="stats.profils || 0"></div>
+                            <div class="stat-label">Profils</div>
+                        </div>
+                    </div>
+                    
+                    <div class="action-buttons" style="margin-top: 20px;">
+                        <button class="btn btn-secondary" @click="exportData()">
+                            📥 Exporter JSON
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Informations -->
+                <div class="settings-card">
+                    <div class="card-title">ℹ️ À propos</div>
+                    
+                    <p style="margin-bottom: 10px;"><strong>CV Rambo</strong> v1.0.0</p>
+                    
+                    <p style="color: #888; margin-bottom: 15px;">
+                        Application de candidature automatisée avec génération de scripts personnalisés.
+                    </p>
+                    
+                    <p style="color: #888; font-size: 0.9rem;">
+                        Stack: Alpine.js + PouchDB + CouchDB + Ollama
+                    </p>
+                </div>
+            </div>
+        </main>
     </div>
-  </div>
 </body>
 </html>

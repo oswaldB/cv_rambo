@@ -1,0 +1,381 @@
+<!-- _app/frontend/dashboard/mockups/nominal.html -->
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CV Rambo - Dashboard</title>
+    <style>
+        :root {
+            --rambo-red: #FF0000;
+            --camouflage-green: #2E8B57;
+            --gunmetal-gray: #2F4F4F;
+            --gold: #FFD700;
+            --text-white: #FFFFFF;
+            --status-new: #FFA500;
+            --status-processing: #3498db;
+            --status-ready: #2ecc71;
+            --status-applied: #95a5a6;
+            --status-error: #e74c3c;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Courier New', monospace;
+            background: var(--gunmetal-gray);
+            color: var(--text-white);
+            min-height: 100vh;
+        }
+        .layout {
+            display: flex;
+            min-height: 100vh;
+        }
+        /* Sidebar */
+        .sidebar {
+            width: 200px;
+            background: #1a1a1a;
+            border-right: 2px solid var(--rambo-red);
+            padding: 20px 0;
+        }
+        .logo {
+            text-align: center;
+            padding: 0 20px 20px;
+            border-bottom: 1px solid #333;
+            margin-bottom: 20px;
+        }
+        .logo h1 {
+            font-family: 'Impact', sans-serif;
+            color: var(--rambo-red);
+            font-size: 1.5rem;
+            text-shadow: 2px 2px 0 var(--gold);
+        }
+        .nav-item {
+            display: block;
+            padding: 15px 20px;
+            color: var(--text-white);
+            text-decoration: none;
+            border-left: 3px solid transparent;
+            transition: all 0.3s;
+        }
+        .nav-item:hover, .nav-item.active {
+            background: rgba(255, 0, 0, 0.1);
+            border-left-color: var(--rambo-red);
+        }
+        .nav-item .icon {
+            margin-right: 10px;
+        }
+        /* Main content */
+        .main {
+            flex: 1;
+            padding: 30px;
+            overflow-y: auto;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        .header h2 {
+            font-family: 'Impact', sans-serif;
+            font-size: 2rem;
+            color: var(--gold);
+            text-transform: uppercase;
+        }
+        .btn-primary {
+            background: var(--rambo-red);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            cursor: pointer;
+            text-transform: uppercase;
+            box-shadow: 4px 4px 0 var(--gold);
+            transition: transform 0.1s;
+        }
+        .btn-primary:hover {
+            transform: translate(-2px, -2px);
+            box-shadow: 6px 6px 0 var(--gold);
+        }
+        .btn-primary:active {
+            transform: translate(0, 0);
+            box-shadow: 2px 2px 0 var(--gold);
+        }
+        /* Stats cards */
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .stat-card {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            padding: 20px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+        }
+        .stat-card.new::before { background: var(--status-new); }
+        .stat-card.processing::before { background: var(--status-processing); }
+        .stat-card.ready::before { background: var(--status-ready); }
+        .stat-card.applied::before { background: var(--status-applied); }
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .stat-card.new .stat-value { color: var(--status-new); }
+        .stat-card.processing .stat-value { color: var(--status-processing); }
+        .stat-card.ready .stat-value { color: var(--status-ready); }
+        .stat-card.applied .stat-value { color: var(--status-applied); }
+        .stat-label {
+            font-size: 0.85rem;
+            color: #888;
+            text-transform: uppercase;
+        }
+        /* Filters */
+        .filters {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        .filter-btn {
+            background: transparent;
+            border: 1px solid #555;
+            color: #888;
+            padding: 8px 16px;
+            cursor: pointer;
+            font-family: inherit;
+        }
+        .filter-btn.active, .filter-btn:hover {
+            border-color: var(--rambo-red);
+            color: var(--rambo-red);
+        }
+        /* Cibles list */
+        .cibles-list {
+            background: #1a1a1a;
+            border: 1px solid #333;
+        }
+        .cible-item {
+            display: flex;
+            align-items: center;
+            padding: 15px 20px;
+            border-bottom: 1px solid #333;
+            transition: background 0.2s;
+        }
+        .cible-item:hover {
+            background: rgba(255, 0, 0, 0.05);
+        }
+        .cible-item:last-child {
+            border-bottom: none;
+        }
+        .cible-status {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 15px;
+            flex-shrink: 0;
+        }
+        .status-new { background: var(--status-new); animation: pulse 2s infinite; }
+        .status-processing { background: var(--status-processing); animation: pulse 1.5s infinite; }
+        .status-script-ready { background: var(--status-ready); box-shadow: 0 0 10px var(--status-ready); }
+        .status-applied { background: var(--status-applied); }
+        .status-error { background: var(--status-error); }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        .cible-info {
+            flex: 1;
+        }
+        .cible-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .cible-meta {
+            font-size: 0.85rem;
+            color: #888;
+        }
+        .cible-actions {
+            display: flex;
+            gap: 10px;
+        }
+        .btn-action {
+            background: transparent;
+            border: 1px solid currentColor;
+            padding: 8px 16px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 0.85rem;
+        }
+        .btn-copy {
+            color: var(--status-ready);
+            border-color: var(--status-ready);
+        }
+        .btn-copy:hover {
+            background: var(--status-ready);
+            color: black;
+        }
+        .btn-view {
+            color: var(--gold);
+            border-color: var(--gold);
+        }
+        /* Sync indicator */
+        .sync-status {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #1a1a1a;
+            border: 1px solid #333;
+            padding: 10px 15px;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .sync-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #2ecc71;
+        }
+        .sync-indicator.syncing {
+            background: #3498db;
+            animation: pulse 1s infinite;
+        }
+        .sync-indicator.offline {
+            background: #e74c3c;
+        }
+    </style>
+</head>
+<body>
+    <div class="layout">
+        <aside class="sidebar">
+            <div class="logo">
+                <h1>🔫 CV RAMBO</h1>
+            </div>
+            <nav>
+                <a href="#" class="nav-item active">
+                    <span class="icon">📊</span> Dashboard
+                </a>
+                <a href="#" class="nav-item">
+                    <span class="icon">➕</span> Ajouter
+                </a>
+                <a href="#" class="nav-item">
+                    <span class="icon">📋</span> Kanban
+                </a>
+                <a href="#" class="nav-item">
+                    <span class="icon">⚔️</span> Arsenal
+                </a>
+                <a href="#" class="nav-item">
+                    <span class="icon">⚙️</span> Settings
+                </a>
+            </nav>
+        </aside>
+        
+        <main class="main">
+            <div class="header">
+                <h2>🔫 QG Tactique</h2>
+                <button class="btn-primary">➕ Nouvelle Cible</button>
+            </div>
+            
+            <!-- Stats -->
+            <div class="stats">
+                <div class="stat-card new">
+                    <div class="stat-value">3</div>
+                    <div class="stat-label">En attente</div>
+                </div>
+                <div class="stat-card processing">
+                    <div class="stat-value">2</div>
+                    <div class="stat-label">En cours</div>
+                </div>
+                <div class="stat-card ready">
+                    <div class="stat-value">5</div>
+                    <div class="stat-label">Script prêt</div>
+                </div>
+                <div class="stat-card applied">
+                    <div class="stat-value">12</div>
+                    <div class="stat-label">Postulé</div>
+                </div>
+            </div>
+            
+            <!-- Filters -->
+            <div class="filters">
+                <button class="filter-btn active">Toutes</button>
+                <button class="filter-btn">🟡 En attente</button>
+                <button class="filter-btn">🔵 En cours</button>
+                <button class="filter-btn">🟢 Script prêt</button>
+                <button class="filter-btn">✅ Postulé</button>
+            </div>
+            
+            <!-- Cibles list -->
+            <div class="cibles-list">
+                <!-- Cible avec script prêt -->
+                <div class="cible-item">
+                    <div class="cible-status status-script-ready"></div>
+                    <div class="cible-info">
+                        <div class="cible-title">Développeur Fullstack @ TechCorp</div>
+                        <div class="cible-meta">linkedin.com/jobs/view/123456 • Script généré il y a 2 min</div>
+                    </div>
+                    <div class="cible-actions">
+                        <button class="btn-action btn-copy">📋 Copier script</button>
+                        <button class="btn-action btn-view">🔍 Voir détail</button>
+                    </div>
+                </div>
+                
+                <!-- Cible en cours -->
+                <div class="cible-item">
+                    <div class="cible-status status-processing"></div>
+                    <div class="cible-info">
+                        <div class="cible-title">Lead Dev @ StartupXYZ</div>
+                        <div class="cible-meta">welcometothejungle.com/... • Génération en cours...</div>
+                    </div>
+                    <div class="cible-actions">
+                        <button class="btn-action btn-view">🔍 Voir détail</button>
+                    </div>
+                </div>
+                
+                <!-- Cible nouvelle -->
+                <div class="cible-item">
+                    <div class="cible-status status-new"></div>
+                    <div class="cible-info">
+                        <div class="cible-title">Data Engineer @ BigData</div>
+                        <div class="cible-meta">indeed.com/... • En attente de traitement</div>
+                    </div>
+                    <div class="cible-actions">
+                        <button class="btn-action btn-view">🔍 Voir détail</button>
+                    </div>
+                </div>
+                
+                <!-- Cible postulée -->
+                <div class="cible-item">
+                    <div class="cible-status status-applied"></div>
+                    <div class="cible-info">
+                        <div class="cible-title">Frontend Dev @ WebAgency</div>
+                        <div class="cible-meta">apec.fr/... • Postulé hier</div>
+                    </div>
+                    <div class="cible-actions">
+                        <button class="btn-action btn-view">🔍 Voir détail</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <!-- Sync status -->
+    <div class="sync-status">
+        <div class="sync-indicator"></div>
+        <span>Sync OK • En ligne</span>
+    </div>
+</body>
+</html>
