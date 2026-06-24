@@ -12,11 +12,14 @@ app.use(express.static('public'));
 
 // Configuration
 const OLLAMA_API_KEY = process.env.OLLAMA_API_KEY || '0011dea90cd149cc91c8e7828e35d187.lwnvxLJf3lt4Cv6n_y5teZ_C';
-const OLLAMA_ENDPOINT = 'https://ollama.com/api/chat';
+// Ollama Cloud utilise le format OpenAI-compatible
+const OLLAMA_ENDPOINT = 'https://ollama.com/v1/chat/completions';
 
 // Proxy route for Ollama API
 app.post('/api/chat', async (req, res) => {
     try {
+        console.log('Proxying request to Ollama:', req.body.model);
+        
         const response = await fetch(OLLAMA_ENDPOINT, {
             method: 'POST',
             headers: {
@@ -27,6 +30,11 @@ app.post('/api/chat', async (req, res) => {
         });
 
         const data = await response.json();
+        
+        if (!response.ok) {
+            console.error('Ollama API error:', data);
+        }
+        
         res.status(response.status).json(data);
     } catch (error) {
         console.error('Proxy error:', error);

@@ -202,10 +202,21 @@
 
                         const data = await response.json();
                         
-                        if (data.message && data.message.content) {
+                        // Gérer format OpenAI (Ollama Cloud) et format natif
+                        let assistantMessage = null;
+                        
+                        if (data.choices && data.choices[0] && data.choices[0].message) {
+                            // Format OpenAI-compatible
+                            assistantMessage = data.choices[0].message.content;
+                        } else if (data.message && data.message.content) {
+                            // Format Ollama natif
+                            assistantMessage = data.message.content;
+                        }
+                        
+                        if (assistantMessage) {
                             this.messages.push({
                                 role: 'assistant',
-                                content: data.message.content
+                                content: assistantMessage
                             });
                         } else if (data.error) {
                             throw new Error(data.error);
