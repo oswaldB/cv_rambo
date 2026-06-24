@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mode Rafale - Cibles Selected</title>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            retro: {
+              black: '#0d0d0d',
+              cream: '#f0f0d8',
+              red: '#e74c3c',
+              blue: '#3498db',
+              green: '#2ecc71',
+              yellow: '#f1c40f',
+              purple: '#9b59b6',
+              orange: '#e67e22',
+              dark: '#2c3e50',
+            }
+          },
+          fontFamily: {
+            pixel: ['"Press Start 2P"', 'cursive'],
+            'pixel-body': ['VT323', 'monospace'],
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-retro-black text-retro-cream font-pixel-body min-h-screen flex items-center justify-center p-4">
+  <!-- Mockup: mode-rafale - cibles-selected -->
+  
+  <div class="fixed inset-0 bg-retro-black bg-opacity-95 flex items-center justify-center z-50 p-4">
+    <div class="bg-retro-dark border-4 border-retro-cream p-6 shadow-[8px_8px_0_0_#0d0d0d] max-w-2xl w-full">
+      
+      <!-- Header -->
+      <div class="flex items-center justify-between mb-6 border-b-4 border-retro-cream pb-4">
+        <h1 class="font-pixel text-retro-red text-sm tracking-tight">MODE RAFALE</h1>
+        <span class="text-retro-green font-pixel text-xs">[READY]</span>
+      </div>
+      
+      <!-- Selection Summary -->
+      <div class="bg-retro-black border-2 border-retro-green p-4 mb-6">
+        <div class="flex items-center gap-4">
+          <div class="w-16 h-16 bg-retro-green flex items-center justify-center border-2 border-retro-cream">
+            <span class="font-pixel text-retro-black text-2xl">5</span>
+          </div>
+          <div>
+            <p class="font-pixel text-retro-green text-sm">CIBLES SELECTIONNEES</p>
+            <p class="text-retro-cream/70 text-lg">Prêt pour le tir groupé</p>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Selected Targets List -->
+      <div class="bg-retro-black border-2 border-retro-cream p-4 mb-6">
+        <h3 class="font-pixel text-retro-blue text-xs mb-3">LISTE DES CIBLES</h3>
+        <div class="space-y-2 max-h-48 overflow-y-auto">
+          <div class="flex items-center gap-3 p-2 bg-retro-dark border border-retro-cream/30">
+            <input type="checkbox" checked class="accent-retro-green w-4 h-4">
+            <div class="flex-1">
+              <p class="text-retro-cream text-base">Développeur Full Stack</p>
+              <p class="text-retro-cream/50 text-sm">TechCorp • Paris</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-3 p-2 bg-retro-dark border border-retro-cream/30">
+            <input type="checkbox" checked class="accent-retro-green w-4 h-4">
+            <div class="flex-1">
+              <p class="text-retro-cream text-base">Frontend Engineer</p>
+              <p class="text-retro-cream/50 text-sm">StartupXYZ • Lyon</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-3 p-2 bg-retro-dark border border-retro-cream/30">
+            <input type="checkbox" checked class="accent-retro-green w-4 h-4">
+            <div class="flex-1">
+              <p class="text-retro-cream text-base">React Developer</p>
+              <p class="text-retro-cream/50 text-sm">WebAgency • Remote</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-3 p-2 bg-retro-dark border border-retro-cream/30">
+            <input type="checkbox" checked class="accent-retro-green w-4 h-4">
+            <div class="flex-1">
+              <p class="text-retro-cream text-base">Software Engineer</p>
+              <p class="text-retro-cream/50 text-sm">BigTech • Bordeaux</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-3 p-2 bg-retro-dark border border-retro-cream/30">
+            <input type="checkbox" checked class="accent-retro-green w-4 h-4">
+            <div class="flex-1">
+              <p class="text-retro-cream text-base">Développeur JS</p>
+              <p class="text-retro-cream/50 text-sm">Consulting • Nantes</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Config Summary -->
+      <div class="flex justify-between items-center bg-retro-black border-2 border-retro-cream p-3 mb-6">
+        <div class="text-center">
+          <p class="text-retro-cream/50 text-xs">DELAI</p>
+          <p class="font-pixel text-retro-cream text-sm">3s</p>
+        </div>
+        <div class="text-center">
+          <p class="text-retro-cream/50 text-xs">MODE</p>
+          <p class="font-pixel text-retro-cream text-sm">AUTO</p>
+        </div>
+        <div class="text-center">
+          <p class="text-retro-cream/50 text-xs">DUREE EST.</p>
+          <p class="font-pixel text-retro-cream text-sm">~15s</p>
+        </div>
+      </div>
+      
+      <!-- Launch Button -->
+      <button class="w-full py-5 bg-retro-red text-retro-cream font-pixel text-lg border-4 border-retro-cream animate-pulse hover:bg-retro-orange transition-all shadow-[4px_4px_0_0_#f0f0d8]">
+        🚀 COMMENCER LA RAFALE
+      </button>
+      
+      <!-- Back -->
+      <button class="w-full mt-3 py-2 text-retro-cream/60 font-pixel text-xs hover:text-retro-cream">
+        ← MODIFIER LA CONFIGURATION
+      </button>
+    </div>
+  </div>
+  
+  <div class="fixed inset-0 pointer-events-none opacity-10 z-[60]"
+       style="background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.3) 2px, rgba(0,0,0,0.3) 4px);">
+  </div>
+</body>
+</html>

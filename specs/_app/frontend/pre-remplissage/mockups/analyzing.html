@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pre-remplissage - Analyzing</title>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            retro: {
+              black: '#0d0d0d',
+              cream: '#f0f0d8',
+              red: '#e74c3c',
+              blue: '#3498db',
+              green: '#2ecc71',
+              yellow: '#f1c40f',
+              purple: '#9b59b6',
+              orange: '#e67e22',
+              dark: '#2c3e50',
+            }
+          },
+          fontFamily: {
+            pixel: ['"Press Start 2P"', 'cursive'],
+            'pixel-body': ['VT323', 'monospace'],
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-retro-black text-retro-cream font-pixel-body min-h-screen flex items-center justify-center p-4">
+  <!-- Mockup: pre-remplissage - analyzing -->
+  
+  <div class="fixed inset-0 bg-retro-black bg-opacity-95 flex items-center justify-center z-50 p-4">
+    <div class="bg-retro-dark border-4 border-retro-yellow p-6 shadow-[8px_8px_0_0_#f1c40f] max-w-2xl w-full">
+      
+      <!-- Header -->
+      <div class="flex items-center justify-between mb-6 border-b-4 border-retro-cream pb-4">
+        <div class="flex items-center gap-2">
+          <span class="animate-spin">⟳</span>
+          <h1 class="font-pixel text-retro-yellow text-sm tracking-tight">ANALYSE EN COURS</h1>
+        </div>
+        <span class="text-retro-cream/50 font-pixel text-xs">[SCAN]</span>
+      </div>
+      
+      <!-- Scanner Animation -->
+      <div class="text-center py-8">
+        <div class="inline-block relative mb-6">
+          <div class="w-24 h-24 border-4 border-retro-yellow flex items-center justify-center">
+            <span class="text-4xl animate-pulse">🔍</span>
+          </div>
+          <div class="absolute inset-0 border-4 border-retro-green opacity-50 animate-ping"></div>
+        </div>
+        
+        <p class="font-pixel text-retro-yellow text-sm animate-pulse">ANALYSE DU HTML...</p>
+        <p class="text-retro-cream/60 text-base mt-2">Ollama scanne la structure du formulaire</p>
+      </div>
+      
+      <!-- Progress Steps -->
+      <div class="bg-retro-black border-2 border-retro-cream p-4 mb-6">
+        <div class="space-y-3">
+          <div class="flex items-center gap-3">
+            <span class="w-6 h-6 bg-retro-green flex items-center justify-center text-retro-black text-xs">✓</span>
+            <span class="text-retro-green">Connexion à Ollama</span>
+          </div>
+          <div class="flex items-center gap-3">
+            <span class="w-6 h-6 bg-retro-green flex items-center justify-center text-retro-black text-xs">✓</span>
+            <span class="text-retro-green">Extraction HTML</span>
+          </div>
+          <div class="flex items-center gap-3">
+            <span class="w-6 h-6 border-2 border-retro-yellow animate-pulse flex items-center justify-center text-retro-yellow text-xs">▶</span>
+            <span class="text-retro-yellow">Identification des champs...</span>
+          </div>
+          <div class="flex items-center gap-3">
+            <span class="w-6 h-6 border-2 border-retro-cream/30 flex items-center justify-center text-retro-cream/30 text-xs">○</span>
+            <span class="text-retro-cream/30">Mapping avec profil</span>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Console Output -->
+      <div class="bg-retro-black border-2 border-retro-cream/50 p-3 font-mono text-xs">
+        <div class="space-y-1 text-retro-cream/70">
+          <p>> Parsing DOM elements...</p>
+          <p>> Found form container: div.application-form</p>
+          <p>> Detected 12 input fields</p>
+          <p class="text-retro-yellow animate-pulse">> Analyzing field types...</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="fixed inset-0 pointer-events-none opacity-10 z-[60]"
+       style="background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.3) 2px, rgba(0,0,0,0.3) 4px);">
+  </div>
+</body>
+</html>

@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pre-remplissage - Submit Success</title>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            retro: {
+              black: '#0d0d0d',
+              cream: '#f0f0d8',
+              red: '#e74c3c',
+              blue: '#3498db',
+              green: '#2ecc71',
+              yellow: '#f1c40f',
+              purple: '#9b59b6',
+              orange: '#e67e22',
+              dark: '#2c3e50',
+            }
+          },
+          fontFamily: {
+            pixel: ['"Press Start 2P"', 'cursive'],
+            'pixel-body': ['VT323', 'monospace'],
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-retro-black text-retro-cream font-pixel-body min-h-screen flex items-center justify-center p-4">
+  <!-- Mockup: pre-remplissage - submit-success -->
+  
+  <div class="fixed inset-0 bg-retro-black bg-opacity-95 flex items-center justify-center z-50 p-4">
+    <div class="bg-retro-dark border-4 border-retro-green p-6 shadow-[8px_8px_0_0_#2ecc71] max-w-2xl w-full">
+      
+      <!-- Success Header -->
+      <div class="text-center mb-6">
+        <div class="inline-flex items-center justify-center w-24 h-24 bg-retro-green border-4 border-retro-cream mb-4 shadow-[4px_4px_0_0_#0d0d0d] animate-bounce">
+          <span class="text-5xl">🎉</span>
+        </div>
+        <h1 class="font-pixel text-retro-green text-lg">MISSION ACCOMPLIE!</h1>
+        <p class="text-retro-cream/70 text-lg mt-2">Candidature envoyée avec succès</p>
+      </div>
+      
+      <!-- Confirmation -->
+      <div class="bg-retro-black border-2 border-retro-green p-4 mb-6">
+        <div class="flex items-center gap-4">
+          <div class="w-12 h-12 bg-retro-green flex items-center justify-center border-2 border-retro-cream">
+            <span class="text-2xl">✓</span>
+          </div>
+          <div>
+            <p class="font-pixel text-retro-cream text-sm">CONFIRMATION RECUE</p>
+            <p class="text-retro-cream/60 text-base">Votre candidature est bien enregistrée</p>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Details -->
+      <div class="bg-retro-black border-2 border-retro-cream p-4 mb-6">
+        <h3 class="font-pixel text-retro-cream/50 text-xs mb-3">DETAILS:</h3>
+        <div class="space-y-2 text-sm">
+          <div class="flex justify-between">
+            <span class="text-retro-cream/70">Poste:</span>
+            <span class="text-retro-cream">Développeur Full Stack</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-retro-cream/70">Entreprise:</span>
+            <span class="text-retro-cream">TechCorp</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-retro-cream/70">Date:</span>
+            <span class="text-retro-cream">24/06/2026 14:32</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-retro-cream/70">Référence:</span>
+            <span class="font-mono text-retro-green">CAND-2026-0842</span>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Next Steps -->
+      <div class="bg-retro-green/20 border-2 border-retro-green p-4 mb-6">
+        <p class="text-retro-green text-sm">💡 Cette offre a été déplacée dans "Candidatures envoyées" de votre kanban.</p>
+      </div>
+      
+      <!-- Actions -->
+      <div class="space-y-3">
+        <button class="w-full py-4 bg-retro-blue text-retro-cream font-pixel text-sm border-4 border-retro-cream hover:bg-retro-cream hover:text-retro-blue transition-all shadow-[4px_4px_0_0_#f0f0d8]">
+          📋 VOIR DANS LE KANBAN
+        </button>
+        
+        <div class="flex gap-3">
+          <button class="flex-1 py-3 bg-retro-dark text-retro-cream font-pixel text-xs border-2 border-retro-cream hover:bg-retro-purple transition-colors">
+            🎯 CANDIDATURE SUIVANTE
+          </button>
+          <button class="flex-1 py-3 bg-retro-dark text-retro-cream font-pixel text-xs border-2 border-retro-cream hover:bg-retro-orange transition-colors">
+            ✕ FERMER
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="fixed inset-0 pointer-events-none opacity-10 z-[60]"
+       style="background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.3) 2px, rgba(0,0,0,0.3) 4px);">
+  </div>
+</body>
+</html>

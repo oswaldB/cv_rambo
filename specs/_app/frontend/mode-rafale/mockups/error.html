@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mode Rafale - Error</title>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            retro: {
+              black: '#0d0d0d',
+              cream: '#f0f0d8',
+              red: '#e74c3c',
+              blue: '#3498db',
+              green: '#2ecc71',
+              yellow: '#f1c40f',
+              purple: '#9b59b6',
+              orange: '#e67e22',
+              dark: '#2c3e50',
+            }
+          },
+          fontFamily: {
+            pixel: ['"Press Start 2P"', 'cursive'],
+            'pixel-body': ['VT323', 'monospace'],
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-retro-black text-retro-cream font-pixel-body min-h-screen flex items-center justify-center p-4">
+  <!-- Mockup: mode-rafale - error -->
+  
+  <div class="fixed inset-0 bg-retro-black bg-opacity-95 flex items-center justify-center z-50 p-4">
+    <div class="bg-retro-dark border-4 border-retro-red p-6 shadow-[8px_8px_0_0_#e74c3c] max-w-2xl w-full">
+      
+      <!-- Error Header -->
+      <div class="text-center mb-6">
+        <div class="inline-flex items-center justify-center w-20 h-20 bg-retro-red border-4 border-retro-cream mb-4 shadow-[4px_4px_0_0_#0d0d0d] animate-pulse">
+          <span class="text-4xl">⚡</span>
+        </div>
+        <h1 class="font-pixel text-retro-red text-sm">ERREUR CRITIQUE</h1>
+        <p class="text-retro-cream/70 text-lg mt-2">La rafale a été interrompue</p>
+      </div>
+      
+      <!-- Error Details -->
+      <div class="bg-retro-black border-2 border-retro-red p-4 mb-6">
+        <h2 class="font-pixel text-retro-red text-xs mb-3">ERROR CODE: RAFALE_SYS_001</h2>
+        <p class="text-retro-cream text-base mb-3">
+          Erreur système pendant le traitement. Onglet cible fermé ou inaccessible.
+        </p>
+        <div class="bg-retro-dark p-3 border border-retro-red/50 font-mono text-xs text-retro-red/80">
+          <p>Error: Tab disconnected</p>
+          <p>at RafaleProcessor.processTarget()</p>
+        </div>
+      </div>
+      
+      <!-- Partial Progress -->
+      <div class="bg-retro-black border-2 border-retro-cream p-4 mb-6">
+        <h3 class="font-pixel text-retro-cream/50 text-xs mb-3">PROGRESSION AVANT ERREUR</h3>
+        <div class="flex justify-between items-center mb-2">
+          <span class="text-retro-cream/70">Cibles traitées:</span>
+          <span class="font-pixel text-retro-cream">2/5</span>
+        </div>
+        <div class="bg-retro-dark h-3 border border-retro-cream">
+          <div class="h-full bg-retro-yellow" style="width: 40%;"></div>
+        </div>
+      </div>
+      
+      <!-- Impact -->
+      <div class="bg-retro-orange/20 border-2 border-retro-orange p-4 mb-6">
+        <h3 class="font-pixel text-retro-orange text-xs mb-2">IMPACT</h3>
+        <ul class="space-y-1 text-sm text-retro-cream/80">
+          <li>• Les cibles traitées avant l'erreur sont sauvegardées</li>
+          <li>• La cible en cours est marquée comme "Problème"</li>
+          <li>• Les cibles restantes restent dans "À postuler"</li>
+        </ul>
+      </div>
+      
+      <!-- Actions -->
+      <div class="space-y-3">
+        <button class="w-full py-4 bg-retro-yellow text-retro-black font-pixel text-sm border-4 border-retro-cream hover:bg-retro-cream transition-all">
+          ↻ REPRENDRE LA RAFALE
+        </button>
+        
+        <button class="w-full py-3 bg-retro-blue text-retro-cream font-pixel text-xs border-2 border-retro-cream hover:bg-retro-cream hover:text-retro-blue transition-colors">
+          📋 VOIR LES RESULTATS PARTIELS
+        </button>
+        
+        <button class="w-full py-2 text-retro-cream/60 font-pixel text-xs hover:text-retro-cream flex items-center justify-center gap-2">
+          <span>🐛</span> SIGNALER L'ERREUR
+        </button>
+      </div>
+    </div>
+  </div>
+  
+  <div class="fixed inset-0 pointer-events-none opacity-10 z-[60]"
+       style="background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.3) 2px, rgba(0,0,0,0.3) 4px);">
+  </div>
+</body>
+</html>

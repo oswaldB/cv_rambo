@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Settings - Loading</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            retro: {
+              black: '#0d0d0d',
+              cream: '#f0f0d8',
+              red: '#e74c3c',
+              blue: '#3498db',
+              green: '#2ecc71',
+              dark: '#2c3e50'
+            }
+          },
+          fontFamily: {
+            pixel: ['"Press Start 2P"', 'cursive'],
+            'pixel-body': ['VT323', 'monospace']
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-retro-dark text-retro-cream font-pixel-body min-h-screen">
+  <!-- Mockup: settings - loading -->
+  
+  <div class="fixed inset-0 bg-retro-dark flex flex-col">
+    
+    <!-- Header -->
+    <div class="flex items-center justify-between p-4 border-b-4 border-retro-cream/20">
+      <h1 class="font-pixel text-sm text-retro-cream">PARAMETRES</h1>
+      <button class="text-retro-red font-pixel text-xs">[X]</button>
+    </div>
+    
+    <!-- Loading state -->
+    <div class="flex-1 flex flex-col items-center justify-center">
+      <div class="relative mb-6">
+        <svg class="animate-spin h-16 w-16 text-retro-cream" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+        
+        <div class="absolute inset-0 flex items-center justify-center">
+          <span class="text-2xl">⚙️</span>
+        </div>
+      </div>
+      
+      <h2 class="font-pixel text-xs text-retro-cream mb-2">CHARGEMENT</h2>
+      
+      <p class="text-lg text-retro-cream/70">Recuperation des parametres...</p>
+      
+      <!-- Skeleton settings -->
+      <div class="mt-8 w-full max-w-md px-4 space-y-4">
+        <div class="h-4 bg-retro-cream/10 animate-pulse w-1/3"></div>
+        
+        <div class="h-12 bg-retro-cream/5 animate-pulse border-2 border-retro-cream/10"></div>
+        
+        <div class="h-12 bg-retro-cream/5 animate-pulse border-2 border-retro-cream/10"></div>
+        
+        <div class="h-4 bg-retro-cream/10 animate-pulse w-1/4 mt-6"></div>
+        
+        <div class="h-12 bg-retro-cream/5 animate-pulse border-2 border-retro-cream/10"></div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

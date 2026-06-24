@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Export CV - Empty Profile</title>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            retro: {
+              black: '#0d0d0d',
+              cream: '#f0f0d8',
+              red: '#e74c3c',
+              blue: '#3498db',
+              green: '#2ecc71',
+              yellow: '#f1c40f',
+              purple: '#9b59b6',
+              orange: '#e67e22',
+              dark: '#2c3e50',
+            }
+          },
+          fontFamily: {
+            pixel: ['"Press Start 2P"', 'cursive'],
+            'pixel-body': ['VT323', 'monospace'],
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-retro-black text-retro-cream font-pixel-body min-h-screen flex items-center justify-center p-4">
+  <!-- Mockup: export-cv - empty-profile -->
+  
+  <!-- Overlay Container -->
+  <div class="fixed inset-0 bg-retro-black bg-opacity-95 flex items-center justify-center z-50 p-4">
+    <!-- Retro Panel -->
+    <div class="bg-retro-dark border-4 border-retro-orange p-6 shadow-[8px_8px_0_0_#e67e22] max-w-lg w-full">
+      
+      <!-- Warning Header -->
+      <div class="text-center mb-6">
+        <div class="inline-flex items-center justify-center w-20 h-20 bg-retro-orange border-4 border-retro-cream mb-4 shadow-[4px_4px_0_0_#0d0d0d]">
+          <span class="text-4xl">⚠</span>
+        </div>
+        <h1 class="font-pixel text-retro-orange text-sm">ARSENAL VIDE!</h1>
+        <p class="text-retro-cream/70 text-lg mt-2">Impossible d'exporter</p>
+      </div>
+      
+      <!-- Empty State Info -->
+      <div class="bg-retro-black border-2 border-retro-orange p-4 mb-6">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-12 h-12 bg-retro-dark border-2 border-retro-cream/30 flex items-center justify-center">
+            <span class="text-2xl opacity-30">📄</span>
+          </div>
+          <div>
+            <p class="font-pixel text-retro-cream/50 text-xs">AUCUNE DONNEE</p>
+            <p class="text-retro-cream/40 text-base">Profil non initialisé</p>
+          </div>
+        </div>
+        
+        <div class="space-y-2 text-base">
+          <div class="flex justify-between text-retro-cream/40">
+            <span>Expériences:</span>
+            <span>0</span>
+          </div>
+          <div class="flex justify-between text-retro-cream/40">
+            <span>Compétences:</span>
+            <span>0</span>
+          </div>
+          <div class="flex justify-between text-retro-cream/40">
+            <span>Formations:</span>
+            <span>0</span>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Message -->
+      <div class="mb-6 text-center">
+        <p class="text-retro-cream text-lg mb-2">
+          Votre arsenal CV est vide. Vous devez d'abord créer votre profil pour pouvoir générer un CV.
+        </p>
+      </div>
+      
+      <!-- Action Buttons -->
+      <div class="space-y-3">
+        <!-- Go to Arsenal Button -->
+        <button class="w-full py-4 bg-retro-blue text-retro-cream font-pixel text-sm border-4 border-retro-cream hover:bg-retro-cream hover:text-retro-blue transition-all shadow-[4px_4px_0_0_#f0f0d8] hover:shadow-[2px_2px_0_0_#f0f0d8]">
+          📝 CREER MON PROFIL
+        </button>
+        
+        <!-- Import Button -->
+        <button class="w-full py-3 bg-retro-purple text-retro-cream font-pixel text-xs border-2 border-retro-cream hover:bg-retro-cream hover:text-retro-purple transition-colors">
+          📥 IMPORTER UN CV EXISTANT
+        </button>
+        
+        <!-- Onboarding Button -->
+        <button class="w-full py-2 text-retro-cream/60 font-pixel text-xs hover:text-retro-cream transition-colors">
+          🚀 LANCER L'ONBOARDING
+        </button>
+      </div>
+      
+      <!-- Help Text -->
+      <div class="mt-6 p-3 bg-retro-green/20 border-2 border-retro-green">
+        <p class="text-retro-green text-base flex items-start gap-2">
+          <span>💡</span>
+          <span>Pas le temps? Utilisez le Mode Journaliste pour enrichir votre CV automatiquement!</span>
+        </p>
+      </div>
+      
+      <!-- Footer -->
+      <p class="mt-4 text-center text-retro-cream/40 text-sm">
+        L'export nécessite au moins une expérience professionnelle
+      </p>
+    </div>
+  </div>
+  
+  <!-- CRT Scanlines Effect -->
+  <div class="fixed inset-0 pointer-events-none opacity-10 z-[60]"
+       style="background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.3) 2px, rgba(0,0,0,0.3) 4px);">
+  </div>
+</body>
+</html>

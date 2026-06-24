@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Settings - API Key Hidden</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            retro: {
+              black: '#0d0d0d',
+              cream: '#f0f0d8',
+              red: '#e74c3c',
+              blue: '#3498db',
+              green: '#2ecc71',
+              dark: '#2c3e50'
+            }
+          },
+          fontFamily: {
+            pixel: ['"Press Start 2P"', 'cursive'],
+            'pixel-body': ['VT323', 'monospace']
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-retro-dark text-retro-cream font-pixel-body min-h-screen">
+  <!-- Mockup: settings - api-key-hidden -->
+  
+  <div class="fixed inset-0 bg-retro-dark flex flex-col">
+    
+    <!-- Header -->
+    <div class="flex items-center justify-between p-4 border-b-4 border-retro-cream/20">
+      <h1 class="font-pixel text-sm text-retro-cream">PARAMETRES</h1>
+      <button class="text-retro-red font-pixel text-xs">[X]</button>
+    </div>
+    
+    <!-- Content -->
+    <div class="flex-1 overflow-y-auto p-4">
+      <div class="bg-retro-black border-4 border-retro-cream/30 p-4">
+        <h2 class="font-pixel text-xs text-retro-purple mb-4">API KEY</h2>
+        
+        <div class="space-y-4">
+          <div>
+            <label class="block font-pixel text-xs text-retro-cream mb-2">CLE API (masquee)</label>
+            
+            <div class="flex gap-2">
+              <input type="password" value="sk-••••••••••••••••" 
+                class="flex-1 px-3 py-2 bg-retro-cream/10 border-4 border-retro-cream/30 text-retro-cream text-lg font-pixel-body"
+                readonly>
+              
+              
+              <button class="px-3 py-2 border-4 border-retro-cream/30 hover:border-retro-cream transition-all">
+                👁️
+              </button>
+            </div>
+          </div>
+          
+          <div class="flex gap-2">
+            <button class="flex-1 px-3 py-2 border-2 border-retro-cream/30 text-sm hover:border-retro-cream transition-all">
+              📋 Copier
+            </button>
+            
+            <button class="flex-1 px-3 py-2 border-2 border-retro-red/30 text-sm hover:border-retro-red hover:text-retro-red transition-all">
+              🗑️ Supprimer
+            </button>
+          </div>
+          
+          <div class="bg-retro-green/10 border-2 border-retro-green/30 p-3">
+            <p class="text-sm text-retro-green">
+              ✓ Cle valide - Dernier test: 24/06 14:30
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

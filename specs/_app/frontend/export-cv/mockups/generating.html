@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Export CV - Generating</title>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            retro: {
+              black: '#0d0d0d',
+              cream: '#f0f0d8',
+              red: '#e74c3c',
+              blue: '#3498db',
+              green: '#2ecc71',
+              yellow: '#f1c40f',
+              purple: '#9b59b6',
+              orange: '#e67e22',
+              dark: '#2c3e50',
+            }
+          },
+          fontFamily: {
+            pixel: ['"Press Start 2P"', 'cursive'],
+            'pixel-body': ['VT323', 'monospace'],
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-retro-black text-retro-cream font-pixel-body min-h-screen flex items-center justify-center p-4">
+  <!-- Mockup: export-cv - generating -->
+  
+  <!-- Overlay Container -->
+  <div class="fixed inset-0 bg-retro-black bg-opacity-95 flex items-center justify-center z-50 p-4">
+    <!-- Retro Panel -->
+    <div class="bg-retro-dark border-4 border-retro-cream p-6 shadow-[8px_8px_0_0_#0d0d0d] max-w-lg w-full">
+      
+      <!-- Header -->
+      <div class="flex items-center justify-between mb-6 border-b-4 border-retro-cream pb-4">
+        <h1 class="font-pixel text-retro-yellow text-sm tracking-tight">EXPORT MISSION</h1>
+        <span class="text-retro-cream/50 font-pixel text-xs">[...]</span>
+      </div>
+      
+      <!-- Loading Content -->
+      <div class="space-y-8 py-8">
+        <!-- Pixel Spinner -->
+        <div class="flex justify-center">
+          <div class="relative w-24 h-24">
+            <!-- Pixel art spinner animation -->
+            <div class="absolute inset-0 border-4 border-retro-cream border-t-retro-green animate-spin"></div>
+            <div class="absolute inset-2 border-4 border-retro-cream/50 border-b-retro-blue animate-spin" style="animation-direction: reverse; animation-duration: 1.5s;"></div>
+            <div class="absolute inset-0 flex items-center justify-center">
+              <span class="font-pixel text-retro-cream text-xs">DOC</span>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Status Text -->
+        <div class="text-center space-y-2">
+          <p class="font-pixel text-retro-green text-sm animate-pulse">GENERATION EN COURS...</p>
+          <p class="text-retro-cream/70 text-lg">Construction du document Word</p>
+        </div>
+        
+        <!-- Progress Bar -->
+        <div class="bg-retro-black border-2 border-retro-cream p-1">
+          <div class="h-4 bg-retro-green animate-pulse" style="width: 65%;"></div>
+        </div>
+        
+        <!-- Steps -->
+        <div class="space-y-2 text-base">
+          <div class="flex items-center gap-2 text-retro-green">
+            <span>✓</span>
+            <span>Analyse du profil</span>
+          </div>
+          <div class="flex items-center gap-2 text-retro-green">
+            <span>✓</span>
+            <span>Formatage des expériences</span>
+          </div>
+          <div class="flex items-center gap-2 text-retro-yellow animate-pulse">
+            <span>▶</span>
+            <span>Génération du fichier .docx</span>
+          </div>
+          <div class="flex items-center gap-2 text-retro-cream/40">
+            <span>○</span>
+            <span>Finalisation</span>
+          </div>
+        </div>
+        
+        <!-- Cancel Button -->
+        <button class="w-full py-3 bg-retro-red/80 text-retro-cream font-pixel text-xs border-2 border-retro-cream hover:bg-retro-red transition-colors">
+          ✕ ANNULER
+        </button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- CRT Scanlines Effect -->
+  <div class="fixed inset-0 pointer-events-none opacity-10 z-[60]"
+       style="background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.3) 2px, rgba(0,0,0,0.3) 4px);">
+  </div>
+  
+  <!-- Flicker Effect -->
+  <div class="fixed inset-0 pointer-events-none opacity-5 z-[60] animate-pulse bg-white mix-blend-overlay"></div>
+</body>
+</html>

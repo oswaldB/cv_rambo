@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pre-remplissage - Low Confidence</title>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            retro: {
+              black: '#0d0d0d',
+              cream: '#f0f0d8',
+              red: '#e74c3c',
+              blue: '#3498db',
+              green: '#2ecc71',
+              yellow: '#f1c40f',
+              purple: '#9b59b6',
+              orange: '#e67e22',
+              dark: '#2c3e50',
+            }
+          },
+          fontFamily: {
+            pixel: ['"Press Start 2P"', 'cursive'],
+            'pixel-body': ['VT323', 'monospace'],
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-retro-black text-retro-cream font-pixel-body min-h-screen flex items-center justify-center p-4">
+  <!-- Mockup: pre-remplissage - low-confidence -->
+  
+  <div class="fixed inset-0 bg-retro-black bg-opacity-95 flex items-center justify-center z-50 p-4">
+    <div class="bg-retro-dark border-4 border-retro-orange p-6 shadow-[8px_8px_0_0_#e67e22] max-w-2xl w-full">
+      
+      <!-- Warning Header -->
+      <div class="text-center mb-6">
+        <div class="inline-flex items-center justify-center w-20 h-20 bg-retro-orange border-4 border-retro-cream mb-4">
+          <span class="text-4xl">⚠</span>
+        </div>
+        <h1 class="font-pixel text-retro-orange text-sm">CONFIANCE FAIBLE</h1>
+        <p class="text-retro-cream/70 text-lg mt-2">Certains champs n'ont pas pu être identifiés</p>
+      </div>
+      
+      <!-- Confidence Meter -->
+      <div class="bg-retro-black border-2 border-retro-orange p-4 mb-6">
+        <div class="flex justify-between items-center mb-2">
+          <span class="font-pixel text-retro-cream/50 text-xs">TAUX DE CONFIANCE GLOBAL</span>
+          <span class="font-pixel text-retro-orange text-lg">65%</span>
+        </div>
+        <div class="h-4 bg-retro-dark border border-retro-cream">
+          <div class="h-full bg-retro-orange" style="width: 65%;"></div>
+        </div>
+      </div>
+      
+      <!-- Fields Status -->
+      <div class="bg-retro-black border-2 border-retro-cream p-4 mb-6">
+        <h3 class="font-pixel text-retro-cream/50 text-xs mb-3">STATUT DES CHAMPS:</h3>
+        <div class="space-y-2 text-sm">
+          <div class="flex justify-between items-center p-2 bg-retro-dark border border-retro-green">
+            <span class="text-retro-cream">Prénom, Nom, Email</span>
+            <span class="text-retro-green">✓ 95%</span>
+          </div>
+          <div class="flex justify-between items-center p-2 bg-retro-dark border border-retro-green">
+            <span class="text-retro-cream">Téléphone</span>
+            <span class="text-retro-green">✓ 88%</span>
+          </div>
+          <div class="flex justify-between items-center p-2 bg-retro-dark border border-retro-orange">
+            <span class="text-retro-cream">Expérience (textarea)</span>
+            <span class="text-retro-orange">? 45%</span>
+          </div>
+          <div class="flex justify-between items-center p-2 bg-retro-dark border border-retro-red">
+            <span class="text-retro-cream">Compétences techniques</span>
+            <span class="text-retro-red">✕ N/A</span>
+          </div>
+          <div class="flex justify-between items-center p-2 bg-retro-dark border border-retro-red">
+            <span class="text-retro-cream">Portfolio URL</span>
+            <span class="text-retro-red">✕ N/A</span>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Options -->
+      <div class="space-y-3">
+        <button class="w-full py-4 bg-retro-orange text-retro-black font-pixel text-sm border-4 border-retro-cream hover:bg-retro-cream transition-all">
+          📝 REMPLIR CHAMPS MANQUANTS
+        </button>
+        
+        <button class="w-full py-3 bg-retro-blue text-retro-cream font-pixel text-xs border-2 border-retro-cream hover:bg-retro-cream hover:text-retro-blue transition-colors">
+          ⚡ CONTINUER AVEC CE QU'ON A
+        </button>
+        
+        <button class="w-full py-2 text-retro-cream/60 font-pixel text-xs hover:text-retro-cream">
+          🔄 REANALYSER LA PAGE
+        </button>
+      </div>
+      
+      <!-- Tip -->
+      <div class="mt-4 p-3 bg-retro-blue/20 border-2 border-retro-blue">
+        <p class="text-retro-blue text-sm">💡 Astuce: Les champs avec "?" nécessitent votre attention avant soumission.</p>
+      </div>
+    </div>
+  </div>
+  
+  <div class="fixed inset-0 pointer-events-none opacity-10 z-[60]"
+       style="background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.3) 2px, rgba(0,0,0,0.3) 4px);">
+  </div>
+</body>
+</html>

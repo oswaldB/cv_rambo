@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Arsenal CV - Nominal</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            rambo: { red: '#FF0000', green: '#2E8B57', gray: '#2F4F4F', gold: '#FFD700' },
+            retro: { black: '#0d0d0d', cream: '#f0f0d8', red: '#e74c3c', blue: '#3498db' }
+          },
+          fontFamily: { pixel: ['"Press Start 2P"', 'cursive'], 'pixel-body': ['VT323', 'monospace'] }
+        }
+      }
+    }
+  </script>
+  <style>.pixel-art { image-rendering: pixelated; }</style>
+</head>
+<body class="bg-retro-black text-retro-cream font-pixel-body min-h-screen">
+  <!-- Mockup: arsenal-cv - nominal -->
+  <div class="fixed inset-0 bg-retro-black">
+    <!-- Header -->
+    <header class="border-b-4 border-rambo-red p-4 flex items-center justify-between">
+      <h1 class="font-pixel text-rambo-red text-sm">⚔️ ARSENAL CV</h1>
+      <button class="font-pixel text-xs text-rambo-gold hover:text-white">[X]</button>
+    </header>
+    
+    <!-- Main Content -->
+    <div class="p-4 max-w-4xl mx-auto">
+      <!-- Stats HUD -->
+      <div class="flex gap-4 mb-6 font-pixel text-xs">
+        <div class="bg-rambo-gray border-2 border-rambo-gold px-3 py-2">
+          <span class="text-rambo-gold">EXP:</span> <span class="text-white">3</span>
+        </div>
+        <div class="bg-rambo-gray border-2 border-rambo-gold px-3 py-2">
+          <span class="text-rambo-gold">SKILL:</span> <span class="text-white">5</span>
+        </div>
+      </div>
+
+      <!-- Experience Section -->
+      <div class="mb-6 border-4 border-rambo-green bg-retro-cream text-retro-black p-4 shadow-[4px_4px_0_0_#0d0d0d]">
+        <div class="flex items-center justify-between mb-4 border-b-2 border-rambo-gray pb-2">
+          <h2 class="font-pixel text-sm">📋 EXPÉRIENCES</h2>
+          <button class="bg-rambo-red text-white px-3 py-1 font-pixel text-xs border-2 border-retro-black hover:shadow-[2px_2px_0_0_#0d0d0d] active:translate-y-0.5">+ AJOUTER</button>
+        </div>
+        
+        <!-- Experience Cards -->
+        <div class="space-y-3">
+          <div class="border-2 border-rambo-gray p-3 flex justify-between items-start">
+            <div>
+              <h3 class="font-pixel text-xs mb-1">Développeur Full Stack</h3>
+              <p class="text-sm text-rambo-gray">TechCorp • 2021-2024</p>
+              <p class="text-sm mt-1">Développement d'applications web avec React et Node.js</p>
+            </div>
+            <div class="flex gap-1">
+              <button class="text-rambo-blue hover:underline text-xs">✎</button>
+              <button class="text-rambo-red hover:underline text-xs">🗑</button>
+            </div>
+          </div>
+          
+          <div class="border-2 border-rambo-gray p-3 flex justify-between items-start">
+            <div>
+              <h3 class="font-pixel text-xs mb-1">Développeur Frontend</h3>
+              <p class="text-sm text-rambo-gray">StartupXYZ • 2019-2021</p>
+              <p class="text-sm mt-1">Création d'interfaces utilisateur modernes</p>
+            </div>
+            <div class="flex gap-1">
+              <button class="text-rambo-blue hover:underline text-xs">✎</button>
+              <button class="text-rambo-red hover:underline text-xs">🗑</button>
+            </div>
+          </div>
+          
+          <div class="border-2 border-rambo-gray p-3 flex justify-between items-start">
+            <div>
+              <h3 class="font-pixel text-xs mb-1">Intégrateur Web</h3>
+              <p class="text-sm text-rambo-gray">Agence Web • 2018-2019</p>
+              <p class="text-sm mt-1">Intégration de templates responsive</p>
+            </div>
+            <div class="flex gap-1">
+              <button class="text-rambo-blue hover:underline text-xs">✎</button>
+              <button class="text-rambo-red hover:underline text-xs">🗑</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Skills Section -->
+      <div class="border-4 border-rambo-blue bg-retro-cream text-retro-black p-4 shadow-[4px_4px_0_0_#0d0d0d]">
+        <div class="flex items-center justify-between mb-4 border-b-2 border-rambo-gray pb-2">
+          <h2 class="font-pixel text-sm">🎯 COMPÉTENCES</h2>
+          <button class="bg-rambo-blue text-white px-3 py-1 font-pixel text-xs border-2 border-retro-black hover:shadow-[2px_2px_0_0_#0d0d0d] active:translate-y-0.5">+ AJOUTER</button>
+        </div>
+        
+        <div class="grid grid-cols-2 md:grid-cols-3 gap-2">
+          <div class="border-2 border-rambo-gray p-2 flex justify-between items-center">
+            <span class="font-pixel text-xs">JavaScript</span>
+            <span class="text-rambo-gold">★★★★★</span>
+          </div>
+          <div class="border-2 border-rambo-gray p-2 flex justify-between items-center">
+            <span class="font-pixel text-xs">React</span>
+            <span class="text-rambo-gold">★★★★☆</span>
+          </div>
+          <div class="border-2 border-rambo-gray p-2 flex justify-between items-center">
+            <span class="font-pixel text-xs">Node.js</span>
+            <span class="text-rambo-gold">★★★★☆</span>
+          </div>
+          <div class="border-2 border-rambo-gray p-2 flex justify-between items-center">
+            <span class="font-pixel text-xs">Python</span>
+            <span class="text-rambo-gold">★★★☆☆</span>
+          </div>
+          <div class="border-2 border-rambo-gray p-2 flex justify-between items-center">
+            <span class="font-pixel text-xs">Docker</span>
+            <span class="text-rambo-gold">★★★☆☆</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

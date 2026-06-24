@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pre-remplissage - Filling</title>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            retro: {
+              black: '#0d0d0d',
+              cream: '#f0f0d8',
+              red: '#e74c3c',
+              blue: '#3498db',
+              green: '#2ecc71',
+              yellow: '#f1c40f',
+              purple: '#9b59b6',
+              orange: '#e67e22',
+              dark: '#2c3e50',
+            }
+          },
+          fontFamily: {
+            pixel: ['"Press Start 2P"', 'cursive'],
+            'pixel-body': ['VT323', 'monospace'],
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-retro-black text-retro-cream font-pixel-body min-h-screen flex items-center justify-center p-4">
+  <!-- Mockup: pre-remplissage - filling -->
+  
+  <div class="fixed inset-0 bg-retro-black bg-opacity-95 flex items-center justify-center z-50 p-4">
+    <div class="bg-retro-dark border-4 border-retro-blue p-6 shadow-[8px_8px_0_0_#3498db] max-w-2xl w-full">
+      
+      <!-- Header -->
+      <div class="flex items-center justify-between mb-6 border-b-4 border-retro-cream pb-4">
+        <div class="flex items-center gap-2">
+          <span class="text-retro-blue animate-pulse">▶</span>
+          <h1 class="font-pixel text-retro-blue text-sm tracking-tight">INJECTION EN COURS</h1>
+        </div>
+        <span class="text-retro-cream/50 font-pixel text-xs">[#3/10]</span>
+      </div>
+      
+      <!-- Progress -->
+      <div class="bg-retro-black border-2 border-retro-cream p-1 mb-6">
+        <div class="h-6 bg-retro-blue relative" style="width: 30%;">
+          <span class="absolute inset-0 flex items-center justify-center font-pixel text-retro-black text-xs">30%</span>
+        </div>
+      </div>
+      
+      <!-- Current Field -->
+      <div class="bg-retro-black border-2 border-retro-yellow p-4 mb-6">
+        <div class="flex items-center gap-3 mb-2">
+          <span class="text-retro-yellow">⚡</span>
+          <span class="font-pixel text-retro-yellow text-xs">CHAMP EN COURS</span>
+        </div>
+        <p class="text-retro-cream text-xl mb-2">Email professionnel</p>
+        <div class="flex items-center gap-2 text-retro-cream/60 text-sm">
+          <span>Injecting:</span>
+          <span class="font-mono text-retro-green">jean.dupont@email.com</span>
+        </div>
+      </div>
+      
+      <!-- Completed Fields -->
+      <div class="bg-retro-black border-2 border-retro-cream/50 p-4 mb-6">
+        <h3 class="font-pixel text-retro-cream/50 text-xs mb-3">CHAMPS COMPLETES:</h3>
+        <div class="space-y-2">
+          <div class="flex items-center gap-2 text-retro-green text-sm">
+            <span>✓</span>
+            <span>Prénom: Jean</span>
+          </div>
+          <div class="flex items-center gap-2 text-retro-green text-sm">
+            <span>✓</span>
+            <span>Nom: Dupont</span>
+          </div>
+          <div class="flex items-center gap-2 text-retro-blue animate-pulse text-sm">
+            <span>▶</span>
+            <span>Email: jean.dupont@...</span>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Cancel -->
+      <button class="w-full py-3 bg-retro-red/80 text-retro-cream font-pixel text-xs border-2 border-retro-cream hover:bg-retro-red transition-colors">
+        ⏹ ARRETER L'INJECTION
+      </button>
+    </div>
+  </div>
+  
+  <div class="fixed inset-0 pointer-events-none opacity-10 z-[60]"
+       style="background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.3) 2px, rgba(0,0,0,0.3) 4px);">
+  </div>
+</body>
+</html>

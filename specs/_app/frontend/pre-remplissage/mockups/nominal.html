@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pre-remplissage - Nominal</title>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            retro: {
+              black: '#0d0d0d',
+              cream: '#f0f0d8',
+              red: '#e74c3c',
+              blue: '#3498db',
+              green: '#2ecc71',
+              yellow: '#f1c40f',
+              purple: '#9b59b6',
+              orange: '#e67e22',
+              dark: '#2c3e50',
+            }
+          },
+          fontFamily: {
+            pixel: ['"Press Start 2P"', 'cursive'],
+            'pixel-body': ['VT323', 'monospace'],
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-retro-black text-retro-cream font-pixel-body min-h-screen flex items-center justify-center p-4">
+  <!-- Mockup: pre-remplissage - nominal -->
+  
+  <div class="fixed inset-0 bg-retro-black bg-opacity-95 flex items-center justify-center z-50 p-4">
+    <div class="bg-retro-dark border-4 border-retro-cream p-6 shadow-[8px_8px_0_0_#0d0d0d] max-w-2xl w-full">
+      
+      <!-- Header -->
+      <div class="flex items-center justify-between mb-6 border-b-4 border-retro-cream pb-4">
+        <h1 class="font-pixel text-retro-blue text-sm tracking-tight">INJECTION TACTIQUE</h1>
+        <button class="text-retro-cream/50 font-pixel text-xs hover:text-retro-cream">[X]</button>
+      </div>
+      
+      <!-- Page Info -->
+      <div class="bg-retro-black border-2 border-retro-cream p-4 mb-6">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 bg-retro-blue flex items-center justify-center border-2 border-retro-cream">
+            <span class="text-retro-cream">🌐</span>
+          </div>
+          <div class="flex-1">
+            <p class="font-pixel text-retro-cream text-xs">linkedin.com/jobs/view/...</p>
+            <p class="text-retro-cream/60 text-base">Offre détectée</p>
+          </div>
+          <span class="px-2 py-1 bg-retro-green border border-retro-cream text-retro-black font-pixel text-xs">OK</span>
+        </div>
+      </div>
+      
+      <!-- Action -->
+      <div class="text-center py-8">
+        <p class="text-retro-cream/70 text-lg mb-6">Page d'inscription détectée sur cette offre</p>
+        
+        <button class="w-full py-5 bg-retro-blue text-retro-cream font-pixel text-sm border-4 border-retro-cream hover:bg-retro-cream hover:text-retro-blue transition-all shadow-[4px_4px_0_0_#f0f0d8] hover:shadow-[2px_2px_0_0_#f0f0d8]">
+          🔍 ANALYSER ET REMPLIR
+        </button>
+        
+        <p class="text-retro-cream/50 text-sm mt-4">L'IA détectera automatiquement les champs du formulaire</p>
+      </div>
+      
+      <!-- Features List -->
+      <div class="bg-retro-black border-2 border-retro-cream/50 p-4 mt-6">
+        <h3 class="font-pixel text-retro-cream/50 text-xs mb-3">CE QUI SERA INJECTÉ:</h3>
+        <div class="space-y-2 text-base">
+          <div class="flex items-center gap-2 text-retro-cream/70">
+            <span class="text-retro-green">✓</span>
+            <span>Nom, prénom, email</span>
+          </div>
+          <div class="flex items-center gap-2 text-retro-cream/70">
+            <span class="text-retro-green">✓</span>
+            <span>Téléphone, adresse</span>
+          </div>
+          <div class="flex items-center gap-2 text-retro-cream/70">
+            <span class="text-retro-green">✓</span>
+            <span>Expériences pertinentes</span>
+          </div>
+          <div class="flex items-center gap-2 text-retro-cream/70">
+            <span class="text-retro-green">✓</span>
+            <span>Compétences liées au poste</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="fixed inset-0 pointer-events-none opacity-10 z-[60]"
+       style="background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.3) 2px, rgba(0,0,0,0.3) 4px);">
+  </div>
+</body>
+</html>

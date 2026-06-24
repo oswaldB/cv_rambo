@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Export CV - Nominal</title>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            retro: {
+              black: '#0d0d0d',
+              cream: '#f0f0d8',
+              red: '#e74c3c',
+              blue: '#3498db',
+              green: '#2ecc71',
+              yellow: '#f1c40f',
+              purple: '#9b59b6',
+              orange: '#e67e22',
+              dark: '#2c3e50',
+            }
+          },
+          fontFamily: {
+            pixel: ['"Press Start 2P"', 'cursive'],
+            'pixel-body': ['VT323', 'monospace'],
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-retro-black text-retro-cream font-pixel-body min-h-screen flex items-center justify-center p-4">
+  <!-- Mockup: export-cv - nominal -->
+  
+  <!-- Overlay Container -->
+  <div class="fixed inset-0 bg-retro-black bg-opacity-95 flex items-center justify-center z-50 p-4">
+    <!-- Retro Panel -->
+    <div class="bg-retro-dark border-4 border-retro-cream p-6 shadow-[8px_8px_0_0_#0d0d0d] max-w-lg w-full">
+      
+      <!-- Header -->
+      <div class="flex items-center justify-between mb-6 border-b-4 border-retro-cream pb-4">
+        <h1 class="font-pixel text-retro-yellow text-sm tracking-tight">EXPORT MISSION</h1>
+        <button class="text-retro-red hover:text-retro-orange font-pixel text-xs">[X]</button>
+      </div>
+      
+      <!-- Content -->
+      <div class="space-y-6">
+        <!-- Profile Summary -->
+        <div class="bg-retro-black border-2 border-retro-cream p-4">
+          <h2 class="font-pixel text-retro-blue text-xs mb-3">PROFILE STATUS</h2>
+          <div class="space-y-2 text-lg">
+            <div class="flex justify-between">
+              <span class="text-retro-cream/70">Expériences:</span>
+              <span class="text-retro-green">8 enregistrées</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-retro-cream/70">Compétences:</span>
+              <span class="text-retro-green">12 validées</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-retro-cream/70">Dernière maj:</span>
+              <span class="text-retro-yellow">24/06/2026</span>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Export Options -->
+        <div class="bg-retro-black border-2 border-retro-cream p-4">
+          <h2 class="font-pixel text-retro-purple text-xs mb-3">FORMAT CIBLE</h2>
+          <div class="flex items-center gap-3 p-3 bg-retro-dark border-2 border-retro-green">
+            <span class="text-2xl">📄</span>
+            <div>
+              <p class="text-retro-cream font-pixel text-xs">Microsoft Word (.docx)</p>
+              <p class="text-retro-cream/60 text-base">Compatible ATS & RH</p>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Action Button -->
+        <button class="w-full py-4 bg-retro-green text-retro-black font-pixel text-sm border-4 border-retro-cream hover:bg-retro-cream hover:text-retro-green transition-all shadow-[4px_4px_0_0_#f0f0d8] hover:shadow-[2px_2px_0_0_#f0f0d8] hover:translate-x-0.5 hover:translate-y-0.5 active:translate-x-1 active:translate-y-1 active:shadow-none">
+          ▶ EXPORTER EN WORD
+        </button>
+        
+        <!-- Footer Info -->
+        <p class="text-center text-retro-cream/50 text-base">
+          Le document sera généré à partir de votre arsenal CV
+        </p>
+      </div>
+    </div>
+  </div>
+  
+  <!-- CRT Scanlines Effect -->
+  <div class="fixed inset-0 pointer-events-none opacity-10 z-[60]"
+       style="background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.3) 2px, rgba(0,0,0,0.3) 4px);">
+  </div>
+</body>
+</html>

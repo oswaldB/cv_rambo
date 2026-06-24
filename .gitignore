@@ -1,0 +1,8 @@
+node_modules/
+.DS_Store
+*.log
+.env
+.env.local
+logs/
+scenarios-to-validate/*/rapport.log
+scenarios-to-validate/*/analyse.txt
