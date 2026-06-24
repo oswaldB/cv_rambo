@@ -1,8 +1,30 @@
+# Dependencies
 node_modules/
-.DS_Store
+package-lock.json
+
+# Logs
+logs/
 *.log
+npm-debug.log*
+
+# Environment
 .env
 .env.local
-logs/
-scenarios-to-validate/*/rapport.log
-scenarios-to-validate/*/analyse.txt
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# PouchDB
+*_pouchdb_/
+*.ldb
+
+# Temp
+tmp/
+temp/

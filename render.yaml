@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: cv-rambo-backend
+    runtime: node
+    plan: free
+    buildCommand: ""
+    startCommand: "node backend/proxy-ollama/code/index.js"
+    envVars:
+      - key: PORT
+        value: 10000
+      - key: OLLAMA_HOST
+        value: https://ollama-api.example.com  # À remplacer par ton URL Ollama
+    healthCheckPath: /health

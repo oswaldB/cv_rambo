@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CV Rambo - Kanban</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Roboto+Condensed:wght@400;700&display=swap" rel="stylesheet">
+  
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/pouchdb@8.0.1/dist/pouchdb.min.js"></script>
+  
+  <script src="workflows/charger-cibles/code/index.js"></script>
+  <script src="workflows/deplacer-cible/code/index.js"></script>
+  <script src="workflows/mettre-a-jour-statut/code/index.js"></script>
+  <script src="workflows/ajouter-tag/code/index.js"></script>
+  <script src="workflows/retirer-tag/code/index.js"></script>
+  <script src="workflows/filtrer-par-tag/code/index.js"></script>
+  <script src="workflows/valider-drop/code/index.js"></script>
+  
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --rambo-red: #FF0000;
+      --camo-green: #2E8B57;
+      --gunmetal-gray: #2F4F4F;
+      --gold: #FFD700;
+      --black: #0a0a0a;
+      --white: #f5f5f5;
+    }
+    body {
+      font-family: 'Roboto Condensed', sans-serif;
+      background: linear-gradient(135deg, var(--gunmetal-gray) 0%, var(--black) 100%);
+      min-height: 100vh;
+      color: var(--white);
+      padding: 40px 20px;
+    }
+    .kanban-container {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+    h1 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 48px;
+      color: var(--gold);
+      text-transform: uppercase;
+      letter-spacing: 6px;
+      text-align: center;
+      margin-bottom: 10px;
+    }
+    .subtitle {
+      color: var(--camo-green);
+      letter-spacing: 4px;
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    .filter-bar {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .filter-label {
+      color: var(--gold);
+      font-family: 'Bebas Neue', sans-serif;
+      letter-spacing: 2px;
+    }
+    .filter-tag {
+      padding: 5px 12px;
+      border: 1px solid var(--gold);
+      background: transparent;
+      color: var(--gold);
+      cursor: pointer;
+      font-family: 'Roboto Condensed', sans-serif;
+    }
+    .filter-tag.active {
+      background: var(--gold);
+      color: var(--black);
+    }
+    .btn-clear {
+      background: transparent;
+      border: 1px solid var(--rambo-red);
+      color: var(--rambo-red);
+      padding: 5px 12px;
+      cursor: pointer;
+      font-family: 'Bebas Neue', sans-serif;
+    }
+    .board {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+      margin-top: 30px;
+    }
+    .column {
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid #444;
+      min-height: 400px;
+      padding: 15px;
+    }
+    .column.drag-over {
+      border-color: var(--gold);
+      background: rgba(255, 215, 0, 0.1);
+    }
+    .column.restricted {
+      border-color: var(--rambo-red);
+      opacity: 0.7;
+    }
+    .column-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid var(--gold);
+    }
+    .column-title {
+      font-family: 'Bebas Neue', sans-serif;
+      color: var(--gold);
+      font-size: 18px;
+      letter-spacing: 2px;
+    }
+    .column-count {
+      background: var(--camo-green);
+      color: white;
+      padding: 2px 8px;
+      font-size: 12px;
+      font-weight: bold;
+    }
+    .card {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid #555;
+      padding: 15px;
+      margin-bottom: 10px;
+      cursor: grab;
+      transition: all 0.2s;
+    }
+    .card:hover {
+      border-color: var(--gold);
+    }
+    .card.dragging {
+      opacity: 0.5;
+      cursor: grabbing;
+    }
+    .card.hidden {
+      display: none;
+    }
+    .card-title {
+      color: var(--white);
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+    .card-company {
+      color: var(--camo-green);
+      font-size: 14px;
+      margin-bottom: 10px;
+    }
+    .card-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      margin-bottom: 10px;
+    }
+    .card-tag {
+      background: rgba(255, 215, 0, 0.2);
+      border: 1px solid var(--gold);
+      color: var(--gold);
+      padding: 2px 6px;
+      font-size: 11px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .card-tag button {
+      background: none;
+      border: none;
+      color: var(--gold);
+      cursor: pointer;
+      font-size: 10px;
+    }
+    .card-actions {
+      display: flex;
+      gap: 5px;
+    }
+    .btn-card {
+      flex: 1;
+      padding: 5px;
+      font-size: 12px;
+      cursor: pointer;
+      border: 1px solid var(--gold);
+      background: transparent;
+      color: var(--gold);
+    }
+    .btn-card:hover {
+      background: var(--gold);
+      color: var(--black);
+    }
+    .loading {
+      text-align: center;
+      padding: 60px;
+    }
+    .spinner {
+      width: 60px;
+      height: 60px;
+      border: 4px solid var(--gold);
+      border-top-color: transparent;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 20px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .empty-state {
+      text-align: center;
+      padding: 40px;
+      color: #666;
+      font-style: italic;
+    }
+    .tag-menu {
+      position: fixed;
+      background: linear-gradient(135deg, var(--gunmetal-gray) 0%, #1a1a1a 100%);
+      border: 2px solid var(--gold);
+      padding: 20px;
+      z-index: 9999;
+      min-width: 250px;
+    }
+    .tag-menu h3 {
+      color: var(--gold);
+      font-family: 'Bebas Neue', sans-serif;
+      margin-bottom: 15px;
+    }
+    .tag-options {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 15px;
+    }
+    .tag-option {
+      padding: 8px 12px;
+      border: 1px solid #555;
+      background: transparent;
+      color: var(--white);
+      cursor: pointer;
+      text-align: left;
+    }
+    .tag-option:hover {
+      border-color: var(--gold);
+    }
+    .tag-input {
+      width: 100%;
+      padding: 8px;
+      background: #1a1a1a;
+      border: 1px solid var(--gold);
+      color: var(--white);
+      margin-bottom: 10px;
+    }
+    @media (max-width: 1200px) {
+      .board { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 768px) {
+      .board { grid-template-columns: 1fr; }
+    }
+    [x-cloak] { display: none !important; }
+  </style>
+</head>
+<body x-data="kanbanScreen()" x-init="init()"
+      x-data="{...workflowChargerCibles(),...workflowDeplacerCible(),...workflowMettreAJourStatut(),...workflowAjouterTag(),...workflowRetirerTag(),...workflowFiltrerParTag(),...workflowValiderDrop()}"
+      x-init="$nextTick(()=>{init();})">
+  
+  <div class="kanban-container">
+    
+    <h1>🎯 KANBAN TACTIQUE</h1>
+    <p class="subtitle">ORGANISE TES CIBLES</p>
+    
+    <!-- Filtres -->
+    <div class="filter-bar" x-show="!loading">
+      <span class="filter-label">FILTRER PAR TAG:</span>
+      <template x-for="tag in availableTags" :key="tag">
+        <button class="filter-tag" 
+                :class="{ 'active': activeFilter === tag }"
+                @click="filtrerParTag(tag)"
+                x-text="tag"></button>
+      </template>
+      <button class="btn-clear" @click="reinitialiserFiltre()" x-show="activeFilter">
+        ✕ RÉINITIALISER
+      </button>
+    </div>
+    
+    <!-- Loading -->
+    <div x-show="loading" class="loading" x-cloak>
+      <div class="spinner"></div>
+      <p style="color: var(--gold);">Chargement des cibles...</p>
+    </div>
+    
+    <!-- Board -->
+    <div x-show="!loading" class="board" x-cloak>
+      
+      <template x-for="(cibles, columnName) in $store.kanbanData.columns" :key="columnName">
+        <div class="column" 
+             :class="{ 'restricted': columnName === 'En attente', 'drag-over': dragOverColumn === columnName }"
+             @dragover.prevent="dragOverColumn = columnName; onDragOver(columnName)"
+             @dragleave="dragOverColumn = null"
+             @drop.prevent="handleDrop(columnName)">
+          
+          <div class="column-header">
+            <span class="column-title" x-text="columnName"></span>
+            <span class="column-count" x-text="getVisibleCount(cibles)">0</span>
+          </div>
+          
+          <div class="cards-list">
+            <template x-for="cible in cibles" :key="cible._id">
+              <div class="card" 
+                   :class="{ 'hidden': cible.hidden, 'dragging': draggedId === cible._id }"
+                   draggable="true"
+                   @dragstart="startDrag(cible._id, columnName)"
+                   x-show="!cible.hidden">
+                
+                <div class="card-title" x-text="cible.title || 'Sans titre'"></div>
+                <div class="card-company" x-text="cible.company || 'Entreprise inconnue'"></div>
+                
+                <div class="card-tags" x-show="cible.tags && cible.tags.length > 0">
+                  <template x-for="tag in cible.tags" :key="tag">
+                    <span class="card-tag">
+                      <span x-text="tag"></span>
+                      <button @click="$data.workflowRetirerTag().retirerTag(cible, tag)">×</button>
+                    </span>
+                  </template>
+                </div>
+                
+                <div class="card-actions">
+                  <button class="btn-card" @click="ouvrirMenuTag(cible)">+ TAG</button>
+                  <button class="btn-card" @click="navigateToCapture(cible.url)">VOIR →</button>
+                </div>
+              </div>
+            </template>
+            
+            <div x-show="getVisibleCount(cibles) === 0" class="empty-state">
+              Aucune cible
+            </div>
+          </div>
+          
+        </div>
+      </template>
+      
+    </div>
+    
+    
+    <!-- Menu Tag -->
+    <div x-show="tagMenuOpen" class="tag-menu" x-cloak
+         x-data="$data.workflowAjouterTag()"
+         x-transition
+         style="top: 50%; left: 50%; transform: translate(-50%, -50%);">
+      <h3>AJOUTER UN TAG</h3>
+      
+      <div class="tag-options">
+        <template x-for="tag in defaultTags" :key="tag">
+          <button class="tag-option" @click="ajouterTag(tag); tagMenuOpen = false" x-text="tag"></button>
+        </template>
+      </div>
+      
+      <input type="text" class="tag-input" x-model="newTag" placeholder="Ou saisissez un nouveau tag...">
+      
+      <div style="display: flex; gap: 10px;">
+        <button class="btn-card" @click="tagMenuOpen = false" style="flex: 1;">ANNULER</button>
+        <button class="btn-card" @click="ajouterTag(); tagMenuOpen = false" style="flex: 2;">AJOUTER</button>
+      </div>
+      
+    </div>
+    
+  </div>
+  
+  <script>
+    function kanbanScreen() {
+      return {
+        loading: true,
+        dragOverColumn: null,
+        availableTags: ['#CiblePrioritaire', '#MissionImpossible', '#ÀRelancer', '#Entretien'],
+        
+        init() {
+          this.$watch(() => this.$store.kanbanData?.loading, (value) => {
+            if (value !== undefined) this.loading = value;
+          });
+        },
+        
+        getVisibleCount(cibles) {
+          return cibles.filter(c => !c.hidden).length;
+        },
+        
+        async handleDrop(targetColumn) {
+          this.dragOverColumn = null;
+          
+          // Vérifier si le drop est autorisé
+          const canDrop = this.$data.workflowValiderDrop().canDrop(targetColumn);
+          if (!canDrop) return;
+          
+          // Effectuer le drop
+          await this.$data.workflowDeplacerCible().dropCard(targetColumn);
+        },
+        
+        ouvrirMenuTag(cible) {
+          this.$data.workflowAjouterTag().ouvrirMenuTag(cible);
+        },
+        
+        navigateToCapture(url) {
+          window.open(url, '_blank');
+        }
+      }
+    }
+  </script>
+  
+</body>
+</html>

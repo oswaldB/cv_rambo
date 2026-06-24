@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CV Rambo - Container Global</title>
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Roboto+Condensed:wght@400;700&display=swap" rel="stylesheet">
+  
+  <!-- PouchDB -->
+  <script src="https://cdn.jsdelivr.net/npm/pouchdb@8.0.1/dist/pouchdb.min.js"></script>
+  
+  <!-- Alpine.js -->
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  
+  <!-- Workflows Globaux -->
+  <script src="global/workflows/initialiser-pouchdb/code/index.js"></script>
+  <script src="global/workflows/appliquer-theme/code/index.js"></script>
+  <script src="global/workflows/capter-erreur/code/index.js"></script>
+  <script src="global/workflows/stocker-erreur/code/index.js"></script>
+  <script src="global/workflows/afficher-toast-erreur/code/index.js"></script>
+  <script src="global/workflows/afficher-toast-succes/code/index.js"></script>
+  <script src="global/workflows/afficher-loader-munitions/code/index.js"></script>
+  <script src="global/workflows/animer-recul/code/index.js"></script>
+  <script src="global/workflows/sauvegarder-donnees/code/index.js"></script>
+  <script src="global/workflows/restaurer-etat/code/index.js"></script>
+  <script src="global/workflows/reessayer-ollama/code/index.js"></script>
+  <script src="global/workflows/exporter-logs/code/index.js"></script>
+  
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Roboto Condensed', sans-serif;
+      background: transparent;
+    }
+    
+    #cv-rambo-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 999999;
+    }
+    
+    /* Écran actif */
+    .screen {
+      display: none;
+      width: 100%;
+      height: 100%;
+    }
+    
+    .screen.active {
+      display: block;
+    }
+    
+    /* Loading initial */
+    .initial-loader {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: linear-gradient(135deg, #1a1a1a 0%, #0a0a0a 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999999;
+    }
+    
+    .initial-loader.hidden {
+      display: none;
+    }
+    
+    .loader-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 48px;
+      color: #FFD700;
+      letter-spacing: 8px;
+      text-transform: uppercase;
+      margin-bottom: 20px;
+      animation: pulse 1.5s ease-in-out infinite;
+    }
+    
+    .loader-subtitle {
+      font-family: 'Roboto Condensed', sans-serif;
+      color: #2E8B57;
+      font-size: 18px;
+      letter-spacing: 4px;
+    }
+    
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+  </style>
+</head>
+<body x-data="appContainer()" x-init="initApp()">
+  
+  <!-- Loader Initial -->
+  <div class="initial-loader" x-show="loading" x-transition:leave="fade">
+    <div class="loader-title">CV RAMBO</div>
+    <div class="loader-subtitle">INITIALISATION DU SYSTÈME...</div>
+  </div>
+  
+  <!-- Container Principal -->
+  <div id="cv-rambo-container" x-data="{
+    ...workflowInitialiserPouchdb(),
+    ...workflowAppliquerTheme(),
+    ...workflowCapterErreur(),
+    ...workflowStockerErreur(),
+    ...workflowAfficherToastErreur(),
+    ...workflowAfficherToastSucces(),
+    ...workflowAfficherLoaderMunitions(),
+    ...workflowAnimerRecul(),
+    ...workflowSauvegarderDonnees(),
+    ...workflowRestaurerEtat(),
+    ...workflowReessayerOllama(),
+    ...workflowExporterLogs()
+  }" x-init="
+    $nextTick(() => {
+      init();
+      initialiserPouchdb();
+      initialiserSauvegarde();
+      initialiserStockageErreurs();
+      initialiserToastErreur();
+      initialiserToastSucces();
+      initialiserLoader();
+      initialiserRecul();
+      initialiserRetry();
+      initialiserExport();
+    })
+  ">
+    
+    <!-- Écran Onboarding (affiché si première utilisation) -->
+    <iframe 
+      x-show="currentScreen === 'onboarding'"
+      src="onboarding/index.html"
+      class="screen"
+      :class="{ 'active': currentScreen === 'onboarding' }"
+      style="width: 100%; height: 100%; border: none;"
+    ></iframe>
+    
+    <!-- Écran Tableau de Bord (accueil après onboarding) -->
+    <iframe 
+      x-show="currentScreen === 'tableau-bord'"
+      src="tableau-bord/index.html"
+      class="screen"
+      :class="{ 'active': currentScreen === 'tableau-bord' }"
+      style="width: 100%; height: 100%; border: none;"
+    ></iframe>
+    
+    <!-- Écran Arsenal CV -->
+    <iframe 
+      x-show="currentScreen === 'arsenal-cv'"
+      src="arsenal-cv/index.html"
+      class="screen"
+      :class="{ 'active': currentScreen === 'arsenal-cv' }"
+      style="width: 100%; height: 100%; border: none;"
+    ></iframe>
+    
+    <!-- Écran Kanban -->
+    <iframe 
+      x-show="currentScreen === 'kanban'"
+      src="kanban/index.html"
+      class="screen"
+      :class="{ 'active': currentScreen === 'kanban' }"
+      style="width: 100%; height: 100%; border: none;"
+    ></iframe>
+    
+    <!-- Écran Capture Offre -->
+    <iframe 
+      x-show="currentScreen === 'capture-offre'"
+      src="capture-offre/index.html"
+      class="screen"
+      :class="{ 'active': currentScreen === 'capture-offre' }"
+      style="width: 100%; height: 100%; border: none;"
+    ></iframe>
+    
+    <!-- Écran Settings -->
+    <iframe 
+      x-show="currentScreen === 'settings'"
+      src="settings/index.html"
+      class="screen"
+      :class="{ 'active': currentScreen === 'settings' }"
+      style="width: 100%; height: 100%; border: none;"
+    ></iframe>
+    
+  </div>
+  
+  <script>
+    function appContainer() {
+      return {
+        loading: true,
+        currentScreen: 'onboarding',
+        onboardingComplete: false,
+        
+        async initApp() {
+          console.log('[APP] Initialisation...');
+          
+          // Attendre que les workflows globaux soient prêts
+          await new Promise(resolve => setTimeout(resolve, 500));
+          
+          // Vérifier si onboarding déjà fait
+          this.checkOnboardingStatus();
+          
+          // Masquer le loader
+          this.loading = false;
+          
+          // Écouter les changements d'écran
+          window.addEventListener('cv-rambo:navigate', (e) => {
+            this.navigateTo(e.detail.screen);
+          });
+          
+          window.addEventListener('cv-rambo:app-unlocked', () => {
+            this.onboardingComplete = true;
+            this.navigateTo('tableau-bord');
+          });
+          
+          console.log('[APP] Prêt');
+        },
+        
+        async checkOnboardingStatus() {
+          // Vérification via les stores Alpine
+          const appState = Alpine.store('appState');
+          if (appState?.restored && appState.data?.profil) {
+            this.onboardingComplete = true;
+            this.currentScreen = 'tableau-bord';
+          }
+        },
+        
+        navigateTo(screen) {
+          this.currentScreen = screen;
+          console.log('[NAVIGATION] Écran:', screen);
+        }
+      }
+    }
+  </script>
+  
+</body>
+</html>

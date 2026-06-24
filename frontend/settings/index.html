@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>CV Rambo - Settings</title>
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  <script src="workflows/charger-settings/code/index.js"></script>
+  <script src="workflows/sauver-setting/code/index.js"></script>
+  <script src="workflows/valider-cle-api/code/index.js"></script>
+  <script src="workflows/exporter-donnees/code/index.js"></script>
+  <script src="workflows/importer-donnees/code/index.js"></script>
+  <style>*{margin:0;padding:0;box-sizing:border-box}body{font-family:'Roboto Condensed',sans-serif;background:linear-gradient(135deg,#2F4F4F,#0a0a0a);min-height:100vh;color:#f5f5f5;padding:40px}</style>
+</head>
+<body x-data="{...workflowChargerSettings(),...workflowSauverSetting(),...workflowValiderCleApi(),...workflowExporterDonnees(),...workflowImporterDonnees()}">
+  <div style="max-width:800px;margin:0 auto">
+    <h1 style="font-family:'Bebas Neue',sans-serif;font-size:48px;color:#FFD700;text-align:center;letter-spacing:4px">⚙️ PARAMÈTRES</h1>
+    <div style="background:rgba(0,0,0,0.4);border:2px solid #FFD700;padding:30px;margin-top:30px">
+      <div style="margin-bottom:20px">
+        <label style="color:#FFD700;font-family:'Bebas Neue'">CLÉ API OLLAMA</label>
+        <input type="text" x-ref="apiKey" style="width:100%;padding:12px;background:#1a1a1a;border:2px solid #FFD700;color:#f5f5f5;margin-top:8px">
+        <button @click="validerCleApi($refs.apiKey.value)" style="margin-top:10px;padding:10px 20px;background:#2E8B57;border:2px solid #FFD700;color:white;font-family:'Bebas Neue';cursor:pointer">VALIDER</button>
+      </div>
+      <div style="display:flex;gap:15px;margin-top:30px">
+        <button @click="exporterDonnees()" style="flex:1;padding:15px;background:transparent;border:2px solid #FFD700;color:#FFD700;font-family:'Bebas Neue';cursor:pointer">EXPORTER DONNÉES</button>
+        <button @click="importerDonnees([])" style="flex:1;padding:15px;background:transparent;border:2px solid #FFD700;color:#FFD700;font-family:'Bebas Neue';cursor:pointer">IMPORTER DONNÉES</button>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
